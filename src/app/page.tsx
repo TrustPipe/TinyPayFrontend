@@ -1,103 +1,142 @@
-import Image from "next/image";
+"use client";
+
+import dynamic from "next/dynamic";
+import { useWallet } from "@aptos-labs/wallet-adapter-react";
+import { useState, useEffect } from "react";
+import { aptosClient } from "@/utils/aptosClient";
+
+const WalletButton = dynamic(
+  () => import("@/components/WalletButton").then(mod => ({ default: mod.WalletButton })),
+  { ssr: false }
+);
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const { connected, account, network } = useWallet();
+  const [balance, setBalance] = useState<string>("0");
+  const [loading, setLoading] = useState(false);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  // Fetch balance when wallet is connected
+  useEffect(() => {
+    if (!account?.address) {
+      setBalance("0");
+      return;
+    }
+
+    const fetchBalance = async () => {
+      try {
+        setLoading(true);
+        
+        // Try to get balance using the account's coin balance API
+        const balance = await aptosClient.getAccountAPTAmount({
+          accountAddress: String(account.address),
+        });
+        
+        setBalance((Number(balance) / 100000000).toFixed(4));
+      } catch (error: any) {
+        // If account doesn't exist or no APT resource, set balance to 0 (this is normal for new accounts)
+        if (error?.message?.includes("resource_not_found") || 
+            error?.message?.includes("Account not found") ||
+            error?.message?.includes("not found")) {
+          setBalance("0");
+        } else {
+          // Only log unexpected errors
+          console.error("Failed to fetch balance:", error);
+          setBalance("Error");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBalance();
+  }, [account?.address]);
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <header className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+          <h1 className="text-2xl font-bold">TinyPay</h1>
+          <WalletButton />
         </div>
+      </header>
+
+      <main className="max-w-7xl mx-auto px-4 py-8">
+        {connected && account ? (
+          <div className="space-y-4">
+            <div className="bg-white rounded-lg shadow p-6">
+              <h2 className="text-xl font-semibold mb-4">Wallet Connected</h2>
+              <div className="space-y-3">
+                <p className="text-gray-700">
+                  <span className="font-medium">Address:</span>{" "}
+                  <code className="bg-gray-100 px-2 py-1 rounded text-sm">
+                    {String(account.address)}
+                  </code>
+                </p>
+                <p className="text-gray-700">
+                  <span className="font-medium">Network:</span>{" "}
+                  <span className="text-blue-600">{network?.name || "Unknown"}</span>
+                </p>
+                <p className="text-gray-700">
+                  <span className="font-medium">Balance:</span>{" "}
+                  <span className="text-green-600 font-semibold">
+                    {loading ? "Loading..." : `${balance} APT`}
+                  </span>
+                </p>
+              </div>
+            </div>
+
+            {balance === "0" && !loading && (
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <p className="text-sm text-yellow-800 font-medium mb-2">
+                  💡 Need testnet tokens?
+                </p>
+                <p className="text-sm text-yellow-700 mb-3">
+                  Your account has no APT. Get free testnet tokens from the official faucet:
+                </p>
+                <a
+                  href="https://faucet.aptoslabs.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition text-sm font-medium"
+                >
+                  Get Testnet APT
+                </a>
+                <div className="text-xs text-yellow-600 mt-3 space-y-1">
+                  <p>📝 Steps:</p>
+                  <p>1. Sign in with your Google account</p>
+                  <p>2. Copy your wallet address above (0x...)</p>
+                  <p>3. Paste it in the faucet and click "Request APT"</p>
+                  <p>4. Tokens will arrive in a few seconds</p>
+                </div>
+              </div>
+            )}
+
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <p className="text-sm text-blue-800">
+                ✅ All features ready: Wallet detection, error handling, balance query, and contract interaction
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="bg-white rounded-lg shadow p-6 text-center">
+            <h2 className="text-xl font-semibold mb-4">Connect Your Wallet</h2>
+            <p className="text-gray-600 mb-4">
+              Click the button above to connect your Aptos wallet
+            </p>
+            <div className="text-sm text-gray-500">
+              💡 Need a wallet?{" "}
+              <a
+                href="https://petra.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:underline"
+              >
+                Install Petra Wallet
+              </a>
+            </div>
+          </div>
+        )}
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
     </div>
   );
 }

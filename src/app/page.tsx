@@ -10,6 +10,11 @@ const WalletButton = dynamic(
   { ssr: false }
 );
 
+const DepositForm = dynamic(
+  () => import("@/components/DepositForm").then(mod => ({ default: mod.DepositForm })),
+  { ssr: false }
+);
+
 export default function Home() {
   const { connected, account, network } = useWallet();
   const [balance, setBalance] = useState<string>("0");
@@ -113,9 +118,12 @@ export default function Home() {
 
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <p className="text-sm text-blue-800">
-                ✅ All features ready: Wallet detection, error handling, balance query, and contract interaction
+                ✅ Wallet connected, you can start using TinyPay
               </p>
             </div>
+
+            {/* Deposit 表单 */}
+            <DepositForm />
           </div>
         ) : (
           <div className="bg-white rounded-lg shadow p-6 text-center">

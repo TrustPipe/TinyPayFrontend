@@ -1,5 +1,8 @@
+"use client"
+
 import Image from "next/image";
 import Link from "next/link";
+import VantaBackground from "@/components/VantaBackground";
 
 const journey = [
   {
@@ -105,11 +108,21 @@ const faqs = [
   },
 ];
 
+const SECTION_HEIGHT = "flex min-h-[calc(100vh-84px)] flex-col justify-center py-16";
+
 export default function Home() {
   return (
-    <div className="bg-[#f5f7fb] text-slate-900">
-      <header className="sticky top-0 z-50 backdrop-blur-md bg-[#f5f7fb]/80">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
+    <div className="relative bg-[#f5f7fb] text-slate-900">
+      <VantaBackground />
+      <div className="absolute top-[100vh] left-0 right-0 bottom-0 bg-[#f5f7fb] z-[1]">
+        <div className="absolute inset-0 w-full h-full overflow-hidden">
+          <div className="absolute top-0 left-0 w-[150vw] h-[100vh] bg-gradient-to-br from-[#6B9EF5]/15 via-transparent to-transparent blur-[120px]" />
+          <div className="absolute top-[50vh] right-0 w-[150vw] h-[100vh] bg-gradient-to-bl from-[#F2B92C]/12 via-transparent to-transparent blur-[120px]" />
+          <div className="absolute top-[100vh] left-0 w-[150vw] h-[100vh] bg-gradient-to-tr from-[#6B9EF5]/10 via-transparent to-[#F2B92C]/8 blur-[120px]" />
+        </div>
+      </div>
+      <header className="sticky top-0 z-50 backdrop-blur-md bg-transparent">
+        <div className="flex items-center justify-between px-6 py-5">
           <div className="flex items-center gap-3">
             <div className="relative h-11 w-11 overflow-hidden rounded-[18px] border border-white/60 bg-white shadow-lg shadow-[#6B9EF5]/20">
               <Image src="/images/logo2.jpg" alt="TinyPay logo" fill className="object-cover" />
@@ -117,12 +130,6 @@ export default function Home() {
             <span className="text-lg font-semibold tracking-tight">TinyPay</span>
           </div>
           <div className="flex items-center gap-3">
-            <Link
-              href="/deposit"
-              className="rounded-full border border-[#6B9EF5] px-5 py-2 text-sm font-semibold text-[#6B9EF5] transition hover:bg-[#6B9EF5]/10"
-            >
-              Launch App
-            </Link>
             <a
               href="https://testflight.apple.com/join"
               target="_blank"
@@ -135,26 +142,28 @@ export default function Home() {
               href="https://x.com/tinypay"
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-full border border-[#6B9EF5] px-5 py-2 text-sm font-semibold text-[#6B9EF5] transition hover:bg-[#6B9EF5]/10"
+              className="rounded-full border border-[#6B9EF5] p-2 text-[#6B9EF5] transition hover:bg-[#6B9EF5]/10"
+              aria-label="Follow on X"
             >
-              Follow on X
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+              </svg>
             </a>
           </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-6">
-        <section className="relative flex min-h-screen flex-col justify-center py-16">
-          <div className="absolute inset-0 -z-10 rounded-[60px] bg-gradient-to-br from-[#6B9EF5]/20 via-white to-[#F2B92C]/10 blur-3xl" aria-hidden />
-          <div className="grid gap-16 lg:grid-cols-[1.1fr_0.9fr]">
-            <div className="space-y-10">
-              <div className="inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 text-sm font-medium text-[#6B9EF5] shadow-sm shadow-[#6B9EF5]/20">
-                <span className="h-2 w-2 rounded-full bg-[#6B9EF5]" /> Offline-first crypto payments
+      <main className="relative z-10 mx-auto max-w-6xl px-6">
+        <section className={SECTION_HEIGHT}>
+          <div className="grid gap-16 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
+            <div className="space-y-12">
+              <div className="inline-flex items-center gap-2 rounded-full bg-[#F2B92C]/30 backdrop-blur-xl border border-[#F2B92C]/40 px-4 py-2 text-sm font-medium text-[#8B6914] shadow-sm shadow-[#F2B92C]/20">
+                <span className="h-2 w-2 rounded-full bg-[#F2B92C]" /> Offline-first crypto payments
               </div>
               <h1 className="text-4xl font-semibold tracking-tight text-slate-900 md:text-6xl">
                 Pay anywhere. Settle on Aptos when you are back online.
               </h1>
-              <p className="max-w-xl text-lg leading-relaxed text-slate-600">
+              <p className="max-w-2xl text-lg leading-relaxed text-slate-600">
                 TinyPay blends on-chain security with a cash-like offline experience. Generate single-use payment codes that merchants trust instantly—and the blockchain settles the rest.
               </p>
               <div className="flex flex-wrap gap-4">
@@ -170,29 +179,15 @@ export default function Home() {
                   href="https://github.com/TrustPipe/TinyPay"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="rounded-full border border-[#6B9EF5] px-6 py-3 text-sm font-semibold text-[#6B9EF5] transition hover:bg-[#6B9EF5]/10"
+                  className="rounded-full border border-white/30 bg-white/10 backdrop-blur-md px-6 py-3 text-sm font-semibold text-[#6B9EF5] transition hover:bg-white/20"
                 >
                   Explore the Code
                 </a>
               </div>
-              <dl className="grid gap-6 sm:grid-cols-3">
-                <div className="rounded-[28px] bg-white/90 p-5 shadow-md shadow-[#6B9EF5]/10">
-                  <dt className="text-sm text-slate-500">Time to transact</dt>
-                  <dd className="text-2xl font-semibold text-slate-900">&lt; 5 seconds</dd>
-                </div>
-                <div className="rounded-[28px] bg-white/90 p-5 shadow-md shadow-[#6B9EF5]/10">
-                  <dt className="text-sm text-slate-500">Supported assets</dt>
-                  <dd className="text-2xl font-semibold text-slate-900">APT · USDC · FA</dd>
-                </div>
-                <div className="rounded-[28px] bg-white/90 p-5 shadow-md shadow-[#6B9EF5]/10">
-                  <dt className="text-sm text-slate-500">Connectivity needed</dt>
-                  <dd className="text-2xl font-semibold text-slate-900">Only to settle</dd>
-                </div>
-              </dl>
             </div>
-            <div className="flex items-center">
-              <div className="relative w-full rounded-[44px] bg-white p-8 shadow-[0_40px_120px_-40px_rgba(107,158,245,0.75)]">
-                <div className="absolute inset-x-6 -top-10 rounded-[32px] border border-white/60 bg-[#6B9EF5] p-5 text-white shadow-lg shadow-[#6B9EF5]/60">
+            <div className="flex items-center justify-center">
+              <div className="relative w-full max-w-lg rounded-[44px] bg-white/20 backdrop-blur-xl border border-white/30 p-10 shadow-[0_40px_120px_-40px_rgba(107,158,245,0.75)]">
+                <div className="absolute inset-x-8 -top-12 rounded-[32px] border border-white/60 bg-[#6B9EF5]/90 backdrop-blur-md p-6 text-white shadow-lg shadow-[#6B9EF5]/60">
                   <div className="flex items-center justify-between text-sm">
                     <span className="font-medium">Merchant Sync</span>
                     <span className="rounded-full bg-white/20 px-3 py-1 text-xs">Live</span>
@@ -200,16 +195,16 @@ export default function Home() {
                   <p className="mt-4 text-2xl font-semibold">OTP • 9X3F · 42.50 USDC</p>
                   <p className="mt-2 text-sm text-white/80">Queued. Auto-settles when network returns.</p>
                 </div>
-                <div className="mt-16 space-y-6">
-                  <div className="rounded-[26px] border border-slate-200/80 p-6 shadow-inner shadow-[#6B9EF5]/10">
+                <div className="mt-20 space-y-8">
+                  <div className="rounded-[26px] border border-white/40 bg-white/30 backdrop-blur-sm p-7 shadow-inner shadow-[#6B9EF5]/10">
                     <h3 className="text-xl font-semibold text-slate-900">Aptos Trust Anchored</h3>
-                    <p className="mt-3 text-sm text-slate-600">
+                    <p className="mt-3 text-sm text-slate-700">
                       Every OTP settles against a Move smart contract that protects balances, validates signatures, and releases funds without custody risk.
                     </p>
                   </div>
-                  <div className="rounded-[26px] border border-slate-200/80 p-6 shadow-inner shadow-[#6B9EF5]/10">
+                  <div className="rounded-[26px] border border-white/40 bg-white/30 backdrop-blur-sm p-7 shadow-inner shadow-[#6B9EF5]/10">
                     <h3 className="text-xl font-semibold text-slate-900">Designed for speed</h3>
-                    <p className="mt-3 text-sm text-slate-600">
+                    <p className="mt-3 text-sm text-slate-700">
                       Swipe-first mobile flows, passkey security, and instant receipts keep both shoppers and merchants moving.
                     </p>
                   </div>
@@ -219,7 +214,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="flex min-h-screen flex-col justify-center py-16">
+        <section className={SECTION_HEIGHT}>
           <div className="rounded-[48px] bg-white/80 p-10 shadow-[0_40px_120px_-60px_rgba(107,158,245,0.5)]">
             <div className="mb-12 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
               <div>
@@ -245,7 +240,7 @@ export default function Home() {
         </section>
 
         {features.map(feature => (
-          <section key={feature.id} className="flex min-h-screen flex-col justify-center py-16">
+          <section key={feature.id} className={SECTION_HEIGHT}>
             <div className="grid gap-10 rounded-[48px] bg-gradient-to-br from-white to-[#6B9EF5]/10 p-10 shadow-[0_40px_120px_-60px_rgba(107,158,245,0.4)] lg:grid-cols-[0.9fr_1.1fr]">
               <div className="space-y-6">
                 <span className="inline-flex w-fit items-center gap-2 rounded-full bg-white/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#6B9EF5]">
@@ -271,7 +266,7 @@ export default function Home() {
           </section>
         ))}
 
-        <section className="flex min-h-screen flex-col justify-center py-16">
+        <section className={SECTION_HEIGHT}>
           <div className="rounded-[48px] bg-white/90 p-10 shadow-[0_40px_120px_-60px_rgba(107,158,245,0.4)]">
             <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
               <div>
@@ -299,7 +294,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="flex min-h-screen flex-col justify-center py-16">
+        <section className={SECTION_HEIGHT}>
           <div className="rounded-[48px] bg-white/85 p-10 shadow-[0_40px_120px_-60px_rgba(107,158,245,0.4)]">
             <div className="mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
               <div>
@@ -327,7 +322,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="flex min-h-screen flex-col justify-center py-16">
+        <section className={SECTION_HEIGHT}>
           <div className="rounded-[48px] bg-gradient-to-br from-[#6B9EF5] via-[#6B9EF5] to-[#F2B92C] p-[1px] shadow-[0_40px_120px_-60px_rgba(107,158,245,0.6)]">
             <div className="rounded-[46px] bg-white/95 p-16 text-center">
               <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[#6B9EF5]">Ready to deploy</p>

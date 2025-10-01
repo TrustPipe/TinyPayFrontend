@@ -109,6 +109,7 @@ const faqs = [
 ];
 
 const SECTION_HEIGHT = "flex min-h-[calc(100vh-84px)] flex-col justify-center py-16";
+const LAST_SECTION_HEIGHT = "flex min-h-[calc(100vh-84px-8rem)] flex-col justify-center py-16";
 
 export default function Home() {
   return (
@@ -187,7 +188,7 @@ export default function Home() {
             </div>
             <div className="flex items-center justify-center">
               <div className="relative w-full max-w-lg rounded-[44px] bg-white/20 backdrop-blur-xl border border-white/30 p-10 shadow-[0_40px_120px_-40px_rgba(107,158,245,0.75)]">
-                <div className="absolute inset-x-8 -top-12 rounded-[32px] border border-white/60 bg-[#6B9EF5]/90 backdrop-blur-md p-6 text-white shadow-lg shadow-[#6B9EF5]/60">
+                <div className="absolute inset-x-8 -top-12 rounded-[32px] border border-[#F2B92C]/30 bg-gradient-to-br from-[#F2B92C]/60 to-[#E8A91C]/70 backdrop-blur-xl p-6 text-white shadow-lg shadow-[#F2B92C]/40">
                   <div className="flex items-center justify-between text-sm">
                     <span className="font-medium">Merchant Sync</span>
                     <span className="rounded-full bg-white/20 px-3 py-1 text-xs">Live</span>
@@ -267,7 +268,7 @@ export default function Home() {
         ))}
 
         <section className={SECTION_HEIGHT}>
-          <div className="rounded-[48px] bg-white/90 p-10 shadow-[0_40px_120px_-60px_rgba(107,158,245,0.4)]">
+          <div className="rounded-[48px] bg-gradient-to-r from-[#6B9EF5]/15 via-white to-[#F2B92C]/15 p-10 shadow-[0_40px_120px_-60px_rgba(107,158,245,0.4)]">
             <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
               <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#6B9EF5]">Technical Architecture</p>
@@ -277,19 +278,14 @@ export default function Home() {
                 A simple four-layer stack keeps offline payments trustworthy while ensuring merchants get paid fast the moment a connection comes back.
               </p>
             </div>
-            <div className="relative mt-12 overflow-hidden rounded-[40px] border border-slate-100 bg-gradient-to-r from-[#6B9EF5]/15 via-white to-[#F2B92C]/15 p-10">
-              <div className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-white/60" aria-hidden />
-              <div className="grid gap-8 md:grid-cols-2">
-                {architectureLayers.map(layer => (
-                  <div key={layer.title} className="rounded-[28px] border border-white/60 bg-white/80 p-6 shadow-md shadow-[#6B9EF5]/10">
-                    <h3 className="text-xl font-semibold text-slate-900">{layer.title}</h3>
-                    <p className="mt-3 text-sm text-slate-600">{layer.detail}</p>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-12 rounded-[30px] border border-dashed border-[#6B9EF5]/50 bg-white/70 p-6 text-center text-sm text-slate-600">
-                Move smart contract (`tinypay.move`) validates OTP hash equality, updates the tail, and releases funds to the merchant wallet in a single atomic call.
-              </div>
+            <div className="mt-12">
+              <Image 
+                src="/images/arc.png" 
+                alt="TinyPay Architecture Diagram" 
+                width={1200} 
+                height={800}
+                className="w-full h-auto rounded-[32px] shadow-lg"
+              />
             </div>
           </div>
         </section>
@@ -322,7 +318,8 @@ export default function Home() {
           </div>
         </section>
 
-        <section className={SECTION_HEIGHT}>
+        <section className={`relative ${LAST_SECTION_HEIGHT}`}>
+          <div className="absolute left-1/2 -translate-x-1/2 w-screen top-0 bottom-0 -z-10 bg-gradient-to-br from-[#6B9EF5]/30 via-[#9CB5F8]/20 to-[#F2B92C]/30 blur-3xl" />
           <div className="rounded-[48px] bg-gradient-to-br from-[#6B9EF5] via-[#6B9EF5] to-[#F2B92C] p-[1px] shadow-[0_40px_120px_-60px_rgba(107,158,245,0.6)]">
             <div className="rounded-[46px] bg-white/95 p-16 text-center">
               <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[#6B9EF5]">Ready to deploy</p>
@@ -330,34 +327,39 @@ export default function Home() {
               <p className="mx-auto mt-4 max-w-2xl text-base text-slate-600">
                 Pilot TinyPay with your team and delight customers who want the speed of contactless with the flexibility of crypto. We will help you integrate in under a week.
               </p>
-              <div className="mt-10 flex flex-wrap justify-center gap-4">
+              <div className="mt-10 flex justify-center">
                 <a
                   href="mailto:team@tinypay.xyz"
                   className="rounded-full bg-[#6B9EF5] px-7 py-3 text-sm font-semibold text-white shadow-lg shadow-[#6B9EF5]/40 transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-[#6B9EF5]/50"
                 >
                   Start a Pilot
                 </a>
-                <a
-                  href="https://cal.com/tinypay/demo"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="rounded-full border border-[#6B9EF5] px-7 py-3 text-sm font-semibold text-[#6B9EF5] transition hover:bg-[#6B9EF5]/10"
-                >
-                  Book a Call
-                </a>
+              </div>
+              <div className="mt-12 pt-12 border-t border-slate-200/60">
+                <p className="text-sm font-medium text-slate-600 mb-4">Scan to Download TestFlight</p>
+                <div className="inline-flex items-center justify-center p-4 bg-white rounded-2xl shadow-lg">
+                  <Image 
+                    src="/images/qrcode.png" 
+                    alt="TestFlight QR Code" 
+                    width={128} 
+                    height={128}
+                    className="w-32 h-32"
+                  />
+                </div>
+                <p className="mt-3 text-xs text-slate-500">Available for iOS</p>
               </div>
             </div>
           </div>
         </section>
       </main>
 
-      <footer className="border-t border-white/60 bg-white/80">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-6 text-sm text-slate-500">
-          <span>© {new Date().getFullYear()} TinyPay. All rights reserved.</span>
-          <div className="flex items-center gap-4">
-            <a href="/terms" className="hover:text-[#6B9EF5]">Terms</a>
-            <a href="/privacy" className="hover:text-[#6B9EF5]">Privacy Policy</a>
-          </div>
+      <footer className="relative z-10 mt-16 py-8 text-center text-xs text-slate-400">
+        <div className="flex items-center justify-center gap-6 flex-wrap">
+          <span>© {new Date().getFullYear()} TinyPay</span>
+          <span className="text-slate-300">·</span>
+          <a href="/terms" className="hover:text-[#6B9EF5] transition">Terms</a>
+          <span className="text-slate-300">·</span>
+          <a href="/privacy" className="hover:text-[#6B9EF5] transition">Privacy</a>
         </div>
       </footer>
     </div>

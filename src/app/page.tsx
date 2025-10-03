@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import dynamic from "next/dynamic";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { useState, useEffect } from "react";
 import VantaBackground from "@/components/VantaBackground";
@@ -72,24 +71,6 @@ const features = [
   },
 ];
 
-const architectureLayers = [
-  {
-    title: "Payer App",
-    detail: "Generates OTP hash chains, manages deposits, works fully offline.",
-  },
-  {
-    title: "Merchant App",
-    detail: "Captures OTPs, queues payments, pushes transactions once reconnected.",
-  },
-  {
-    title: "TinyPay Server",
-    detail: "Verifies merchants, orchestrates contract calls, keeps wallets in sync.",
-  },
-  {
-    title: "Aptos Smart Contract",
-    detail: "Holds escrow, validates OTPs, releases funds trustlessly.",
-  },
-];
 
 const faqs = [
   {
@@ -126,6 +107,17 @@ export default function Home() {
   const [asset, setAsset] = useState<"APT" | "USDC">("APT");
   const [depositLoading, setDepositLoading] = useState(false);
   const [depositStatus, setDepositStatus] = useState("");
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  // Monitor scroll position
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Fetch balance when wallet is connected
   useEffect(() => {
@@ -141,7 +133,7 @@ export default function Home() {
           accountAddress: String(account.address),
         });
         setBalance((Number(balance) / 100000000).toFixed(4));
-      } catch (error: any) {
+      } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         if (
           message.includes("resource_not_found") ||
@@ -195,7 +187,7 @@ export default function Home() {
       const assetMetadata = getAssetMetadata(asset);
       const contractAmount = amountToContractUnits(parseFloat(amount), asset);
       
-      const transaction = {
+      const response = await signAndSubmitTransaction({
         data: {
           function: `${CONTRACT_ADDRESS}::tinypay::deposit`,
           functionArguments: [
@@ -204,10 +196,10 @@ export default function Home() {
             Array.from(tailBytes)
           ]
         }
-      } as any;
-
-      const response = await signAndSubmitTransaction(transaction);
-      const txHash = (response as any)?.hash || "Success";
+      } as never);
+      const txHash = typeof response === 'object' && response !== null && 'hash' in response 
+        ? String(response.hash) 
+        : "Success";
       
       saveHashChain(String(account.address), workflow.hashes);
       
@@ -215,9 +207,10 @@ export default function Home() {
       setAmount("");
       setPassword("");
       
-    } catch (error: any) {
+    } catch (error) {
       console.error("Deposit failed:", error);
-      setDepositStatus(`Failed: ${error.message || String(error)}`);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      setDepositStatus(`Failed: ${errorMessage}`);
     } finally {
       setDepositLoading(false);
     }
@@ -243,7 +236,9 @@ export default function Home() {
           <div className="absolute top-[100vh] left-0 w-[150vw] h-[100vh] bg-gradient-to-tr from-[#6B9EF5]/10 via-transparent to-[#F2B92C]/8 blur-[120px]" />
         </div>
       </div>
-      <header className="sticky top-0 z-50 backdrop-blur-md bg-transparent">
+      <header className={`sticky top-0 z-50 transition-all duration-300 ${
+        isScrolled ? 'backdrop-blur-md bg-white/30' : 'bg-transparent'
+      }`}>
         <div className="flex items-center justify-between px-6 py-5">
           <div className="flex items-center gap-3">
             <div className="relative h-11 w-11 overflow-hidden rounded-[18px] border border-white/60 bg-white shadow-lg shadow-[#6B9EF5]/20">
@@ -258,15 +253,26 @@ export default function Home() {
               href="https://tinyurl.com/tinypay-demo"
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-full bg-[#6B9EF5] px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-[#6B9EF5]/40 transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-[#6B9EF5]/50"
+              className="rounded-full border-2 border-[#91C8CA] px-5 py-2 text-sm font-semibold text-[#91C8CA] transition hover:bg-gradient-to-r hover:from-[#91C8CA] hover:via-[#9FE0D1] hover:to-[#D3A86C] hover:text-white hover:border-transparent hover:shadow-lg hover:shadow-[#91C8CA]/40"
             >
               Watch the Demo
+            </a>
+            <a
+              href="https://testflight.apple.com/join"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-full border-2 border-[#91C8CA] p-2 text-[#91C8CA] transition hover:bg-gradient-to-br hover:from-[#91C8CA]/10 hover:to-[#9FE0D1]/10"
+              aria-label="Download on App Store"
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
+              </svg>
             </a>
             <a
               href="https://github.com/TrustPipe/TinyPay"
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-full border border-[#6B9EF5] p-2 text-[#6B9EF5] transition hover:bg-[#6B9EF5]/10"
+              className="rounded-full border-2 border-[#91C8CA] p-2 text-[#91C8CA] transition hover:bg-gradient-to-br hover:from-[#91C8CA]/10 hover:to-[#9FE0D1]/10"
               aria-label="View on GitHub"
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -277,7 +283,7 @@ export default function Home() {
               href="https://x.com/tinypay"
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-full border border-[#6B9EF5] p-2 text-[#6B9EF5] transition hover:bg-[#6B9EF5]/10"
+              className="rounded-full border-2 border-[#91C8CA] p-2 text-[#91C8CA] transition hover:bg-gradient-to-br hover:from-[#91C8CA]/10 hover:to-[#9FE0D1]/10"
               aria-label="Follow on X"
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -396,7 +402,7 @@ export default function Home() {
                           Password (min. 6 chars)
                         </label>
                         <input
-                          type="password"
+                          type="text"
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           placeholder="Enter password"
@@ -446,7 +452,7 @@ export default function Home() {
                       <div className="flex items-center gap-2">
                         <div className={`h-2 w-2 rounded-full ${
                           depositStatus.includes("successful") 
-                            ? "bg-[#9FE0D1]" 
+                            ? "bg-green-500" 
                             : depositStatus.includes("Failed") || depositStatus.includes("failed")
                             ? "bg-red-500"
                             : "bg-[#91C8CA] animate-pulse"
@@ -455,7 +461,7 @@ export default function Home() {
                       </div>
                       <p className={`text-sm font-medium ${
                         depositStatus.includes("successful") 
-                          ? "text-[#9FE0D1]" 
+                          ? "text-green-600" 
                           : depositStatus.includes("Failed") || depositStatus.includes("failed")
                           ? "text-red-600"
                           : "text-[#91C8CA]"
@@ -493,10 +499,10 @@ export default function Home() {
         </section>
 
         <section className={SECTION_HEIGHT}>
-          <div className="rounded-[48px] bg-white/80 p-10 shadow-[0_40px_120px_-60px_rgba(107,158,245,0.5)]">
+          <div className="rounded-[48px] bg-gradient-to-br from-white/90 via-[#9FE0D1]/8 to-white/80 p-10 shadow-[0_40px_120px_-60px_rgba(145,200,202,0.4)]">
             <div className="mb-12 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
               <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#6B9EF5]">User Journey</p>
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#91C8CA]">User Journey</p>
                 <h2 className="mt-3 text-4xl font-semibold text-slate-900">A cash-like flow for digital value</h2>
               </div>
               <p className="max-w-lg text-base text-slate-600">
@@ -507,7 +513,7 @@ export default function Home() {
               {journey.map(step => (
                 <div
                   key={step.title}
-                  className="rounded-[32px] border border-slate-100 bg-slate-50/80 p-8 transition hover:-translate-y-1 hover:border-[#6B9EF5]/50 hover:shadow-lg hover:shadow-[#6B9EF5]/20"
+                  className="rounded-[32px] border border-[#9FE0D1]/20 bg-white/80 backdrop-blur-sm p-8 transition hover:-translate-y-1 hover:border-[#91C8CA]/50 hover:shadow-lg hover:shadow-[#91C8CA]/20"
                 >
                   <h3 className="text-lg font-semibold text-slate-900">{step.title}</h3>
                   <p className="mt-3 text-sm text-slate-600">{step.description}</p>
@@ -519,9 +525,9 @@ export default function Home() {
 
         {features.map(feature => (
           <section key={feature.id} className={SECTION_HEIGHT}>
-            <div className="grid gap-10 rounded-[48px] bg-gradient-to-br from-white to-[#6B9EF5]/10 p-10 shadow-[0_40px_120px_-60px_rgba(107,158,245,0.4)] lg:grid-cols-[0.9fr_1.1fr]">
+            <div className="grid gap-10 rounded-[48px] bg-gradient-to-br from-[#D3A86C]/8 via-white/95 to-[#9FE0D1]/10 p-10 shadow-[0_40px_120px_-60px_rgba(211,168,108,0.3)] lg:grid-cols-[0.9fr_1.1fr]">
               <div className="space-y-6">
-                <span className="inline-flex w-fit items-center gap-2 rounded-full bg-white/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#6B9EF5]">
+                <span className="inline-flex w-fit items-center gap-2 rounded-full bg-gradient-to-r from-[#91C8CA]/20 to-[#9FE0D1]/20 backdrop-blur-sm px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#91C8CA] border border-[#91C8CA]/25">
                   {feature.label}
                 </span>
                 <h2 className="text-4xl font-semibold text-slate-900">{feature.headline}</h2>
@@ -531,9 +537,9 @@ export default function Home() {
                 {feature.bulletPoints.map(point => (
                   <div
                     key={point}
-                    className="flex items-start gap-4 rounded-[28px] border border-white/70 bg-white/80 p-6 shadow-inner shadow-[#6B9EF5]/10"
+                    className="flex items-start gap-4 rounded-[28px] border border-[#9FE0D1]/30 bg-white/90 backdrop-blur-sm p-6 shadow-inner shadow-[#91C8CA]/8"
                   >
-                    <span className="mt-1 inline-flex h-7 w-7 items-center justify-center rounded-full bg-[#F2B92C]/30 text-sm font-semibold text-[#6B9EF5]">
+                    <span className="mt-1 inline-flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-[#D3A86C]/25 to-[#9FE0D1]/25 text-sm font-semibold text-[#91C8CA]">
                       •
                     </span>
                     <p className="text-sm text-slate-600">{point}</p>
@@ -545,10 +551,10 @@ export default function Home() {
         ))}
 
         <section className={SECTION_HEIGHT}>
-          <div className="rounded-[48px] bg-gradient-to-r from-[#6B9EF5]/15 via-white to-[#F2B92C]/15 p-10 shadow-[0_40px_120px_-60px_rgba(107,158,245,0.4)]">
+          <div className="rounded-[48px] bg-gradient-to-r from-[#91C8CA]/12 via-white/95 to-[#D3A86C]/12 p-10 shadow-[0_40px_120px_-60px_rgba(145,200,202,0.35)]">
             <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
               <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#6B9EF5]">Technical Architecture</p>
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#91C8CA]">Technical Architecture</p>
                 <h2 className="mt-3 text-4xl font-semibold text-slate-900">Secure layers working together</h2>
               </div>
               <p className="max-w-xl text-base text-slate-600">
@@ -561,17 +567,17 @@ export default function Home() {
                 alt="TinyPay Architecture Diagram" 
                 width={1200} 
                 height={800}
-                className="w-full h-auto rounded-[32px] shadow-lg"
+                className="w-full h-auto rounded-[32px] shadow-lg shadow-[#91C8CA]/20"
               />
             </div>
           </div>
         </section>
 
         <section className={SECTION_HEIGHT}>
-          <div className="rounded-[48px] bg-white/85 p-10 shadow-[0_40px_120px_-60px_rgba(107,158,245,0.4)]">
+          <div className="rounded-[48px] bg-gradient-to-br from-white/90 via-[#9FE0D1]/5 to-white/85 p-10 shadow-[0_40px_120px_-60px_rgba(159,224,209,0.3)]">
             <div className="mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
               <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#6B9EF5]">FAQ</p>
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#91C8CA]">FAQ</p>
                 <h2 className="mt-3 text-4xl font-semibold text-slate-900">Answers before you ask</h2>
               </div>
               <p className="max-w-xl text-base text-slate-600">
@@ -582,11 +588,11 @@ export default function Home() {
               {faqs.map(item => (
                 <details
                   key={item.question}
-                  className="group rounded-[32px] border border-slate-100 bg-slate-50/80 p-6 transition hover:border-[#6B9EF5]/60 hover:shadow-lg hover:shadow-[#6B9EF5]/10"
+                  className="group rounded-[32px] border border-[#9FE0D1]/25 bg-white/80 backdrop-blur-sm p-6 transition hover:border-[#91C8CA]/50 hover:shadow-lg hover:shadow-[#91C8CA]/15"
                 >
                   <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-lg font-semibold text-slate-900">
                     {item.question}
-                    <span className="text-sm font-normal text-[#6B9EF5] transition group-open:rotate-45">+</span>
+                    <span className="text-sm font-normal text-[#91C8CA] transition group-open:rotate-45">+</span>
                   </summary>
                   <p className="mt-4 text-sm text-slate-600">{item.answer}</p>
                 </details>
@@ -596,10 +602,10 @@ export default function Home() {
         </section>
 
         <section className={`relative ${LAST_SECTION_HEIGHT}`}>
-          <div className="absolute left-1/2 -translate-x-1/2 w-screen top-0 bottom-0 -z-10 bg-gradient-to-br from-[#6B9EF5]/30 via-[#9CB5F8]/20 to-[#F2B92C]/30 blur-3xl" />
-          <div className="rounded-[48px] bg-gradient-to-br from-[#6B9EF5] via-[#6B9EF5] to-[#F2B92C] p-[1px] shadow-[0_40px_120px_-60px_rgba(107,158,245,0.6)]">
+          <div className="absolute left-1/2 -translate-x-1/2 w-screen top-0 bottom-0 -z-10 bg-gradient-to-br from-[#91C8CA]/25 via-[#9FE0D1]/15 to-[#D3A86C]/25 blur-3xl" />
+          <div className="rounded-[48px] bg-gradient-to-br from-[#D3A86C] via-[#91C8CA] to-[#9FE0D1] p-[1px] shadow-[0_40px_120px_-60px_rgba(145,200,202,0.5)]">
             <div className="rounded-[46px] bg-white/95 p-16 text-center">
-              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[#6B9EF5]">Ready to deploy</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[#91C8CA]">Ready to deploy</p>
               <h2 className="mt-6 text-4xl font-semibold text-slate-900">Bring offline crypto payments to your checkout</h2>
               <p className="mx-auto mt-4 max-w-2xl text-base text-slate-600">
                 Pilot TinyPay with your team and delight customers who want the speed of contactless with the flexibility of crypto. We will help you integrate in under a week.
@@ -607,7 +613,7 @@ export default function Home() {
               <div className="mt-10 flex justify-center">
                 <a
                   href="mailto:team@tinypay.xyz"
-                  className="rounded-full bg-[#6B9EF5] px-7 py-3 text-sm font-semibold text-white shadow-lg shadow-[#6B9EF5]/40 transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-[#6B9EF5]/50"
+                  className="rounded-full bg-gradient-to-r from-[#91C8CA] via-[#9FE0D1] to-[#D3A86C] px-7 py-3 text-sm font-semibold text-white shadow-lg shadow-[#91C8CA]/40 transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-[#91C8CA]/50"
                 >
                   Start a Pilot
                 </a>
@@ -634,9 +640,9 @@ export default function Home() {
         <div className="flex items-center justify-center gap-6 flex-wrap">
           <span>© {new Date().getFullYear()} TinyPay</span>
           <span className="text-slate-300">·</span>
-          <a href="/terms" className="hover:text-[#6B9EF5] transition">Terms</a>
+          <a href="/terms" className="hover:text-[#91C8CA] transition">Terms</a>
           <span className="text-slate-300">·</span>
-          <a href="/privacy" className="hover:text-[#6B9EF5] transition">Privacy</a>
+          <a href="/privacy" className="hover:text-[#91C8CA] transition">Privacy</a>
         </div>
       </footer>
     </div>

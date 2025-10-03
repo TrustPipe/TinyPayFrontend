@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { completePaymentWorkflow, saveHashChain } from "@/utils/hashChain";
-import { CONTRACT_ADDRESS, ASSETS, amountToContractUnits, getAssetMetadata, getAPTMetadata } from "@/utils/contract";
+import { CONTRACT_ADDRESS, amountToContractUnits, getAssetMetadata } from "@/utils/contract";
 
 /**
  * TinyPay Deposit Form Component
@@ -87,7 +87,8 @@ export function DepositForm() {
       // Use wallet adapter's signAndSubmitTransaction with new API format
       // deposit(&signer, token_metadata, amount, tail_bytes)
       // signer is automatically passed (connected wallet)
-      const transaction = {
+      console.log("📝 Transaction built successfully, awaiting signature...");
+      const response = await signAndSubmitTransaction({
         data: {
           function: `${CONTRACT_ADDRESS}::tinypay::deposit`,
           functionArguments: [
@@ -96,15 +97,14 @@ export function DepositForm() {
             Array.from(tailBytes) // arg2: vector<u8> (tail bytes)
           ]
         }
-      } as any;
-
-      console.log("📝 Transaction built successfully, awaiting signature...");
-      const response = await signAndSubmitTransaction(transaction);
+      } as never);
       
       console.log("✅ Transaction submitted:", response);
       
       // Extract transaction hash from response
-      const txHash = (response as any)?.hash || JSON.stringify(response).slice(0, 50);
+      const txHash = typeof response === 'object' && response !== null && 'hash' in response 
+        ? String(response.hash) 
+        : JSON.stringify(response).slice(0, 50);
       
       // Save hash chain to local storage
       saveHashChain(String(account.address), workflow.hashes);
@@ -115,9 +115,10 @@ export function DepositForm() {
       setAmount("");
       setPassword("");
       
-    } catch (error: any) {
+    } catch (error) {
       console.error("❌ Deposit failed:", error);
-      setStatus(`❌ Failed: ${error.message || String(error)}`);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      setStatus(`❌ Failed: ${errorMessage}`);
     } finally {
       setLoading(false);
     }

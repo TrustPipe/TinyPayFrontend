@@ -111,7 +111,7 @@ export default function Deposit() {
                   <p>📝 Steps:</p>
                   <p>1. Sign in with your Google account</p>
                   <p>2. Copy your wallet address above (0x...)</p>
-                  <p>3. Paste it in the faucet and click "Request APT"</p>
+                  <p>3. Paste it in the faucet and click &ldquo;Request APT&rdquo;</p>
                   <p>4. Tokens will arrive in a few seconds</p>
                 </div>
               </div>

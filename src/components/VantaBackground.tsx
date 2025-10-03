@@ -1,11 +1,14 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef } from "react"
+
+interface VantaEffect {
+  destroy: () => void;
+}
 
 export default function VantaBackground() {
   const vantaRef = useRef<HTMLDivElement>(null)
-  const vantaEffect = useRef<any>(null)
-  const [vantaLoaded, setVantaLoaded] = useState(false)
+  const vantaEffect = useRef<VantaEffect | null>(null)
 
   useEffect(() => {
     // 动态导入 THREE 和 VANTA
@@ -18,6 +21,7 @@ export default function VantaBackground() {
         
         if (!isMounted || !vantaRef.current || vantaEffect.current) return
         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         vantaEffect.current = (VANTA as any).default({
           el: vantaRef.current,
           THREE: THREE,
@@ -34,8 +38,6 @@ export default function VantaBackground() {
           zoom: 1,
           speed: 1,
         })
-        
-        setVantaLoaded(true)
       } catch (error) {
         console.error("Failed to load Vanta:", error)
       }

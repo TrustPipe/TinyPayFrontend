@@ -229,11 +229,122 @@ export default function Home() {
                   )}
                 </div>
 
-                {/* Card 2: Deposit Form */}
-                {isConnected && (
+                {/* Card 2: Deposit Form or Getting Started */}
+                {isConnected ? (
                   <div className="rounded-[28px] border border-[#91C8CA]/30 bg-gradient-to-br from-[#9FE0D1]/12 via-white/95 to-[#D3A86C]/8 backdrop-blur-xl p-6 shadow-xl shadow-[#91C8CA]/20">
                     <DepositForm />
                   </div>
+                ) : (
+                  <>
+                    {/* Getting Started Card */}
+                    <div className="rounded-[28px] border border-[#91C8CA]/30 bg-gradient-to-br from-white/95 via-[#9FE0D1]/8 to-white/90 backdrop-blur-xl p-6 shadow-xl shadow-[#91C8CA]/20">
+                      <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                        <svg className="w-5 h-5 text-[#91C8CA]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        Quick Start
+                      </h3>
+                      <div className="space-y-4">
+                        <div className="flex gap-3">
+                          <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-[#91C8CA] to-[#9FE0D1] flex items-center justify-center text-white text-sm font-bold">
+                            1
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold text-slate-800 mb-1">Connect Your Wallet</p>
+                            <p className="text-xs text-slate-600">Use MetaMask or any Web3 wallet to connect to U2U Network</p>
+                          </div>
+                        </div>
+                        <div className="flex gap-3">
+                          <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-[#91C8CA] to-[#9FE0D1] flex items-center justify-center text-white text-sm font-bold">
+                            2
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold text-slate-800 mb-1">Deposit Funds</p>
+                            <p className="text-xs text-slate-600">Add U2U, USDC, or USDT to your TinyPay account</p>
+                          </div>
+                        </div>
+                        <div className="flex gap-3">
+                          <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-[#91C8CA] to-[#9FE0D1] flex items-center justify-center text-white text-sm font-bold">
+                            3
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold text-slate-800 mb-1">Pay Offline</p>
+                            <p className="text-xs text-slate-600">Generate secure OTPs and make payments without internet</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Features Card */}
+                    <div className="rounded-[28px] border border-[#D3A86C]/25 bg-gradient-to-br from-[#D3A86C]/8 via-white/95 to-[#9FE0D1]/8 backdrop-blur-xl p-6 shadow-xl shadow-[#D3A86C]/15">
+                      <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                        <svg className="w-5 h-5 text-[#D3A86C]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                        </svg>
+                        Why TinyPay?
+                      </h3>
+                      <div className="space-y-3">
+                        <div className="flex items-start gap-3">
+                          <svg className="w-5 h-5 text-[#91C8CA] flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          <div>
+                            <p className="text-sm font-semibold text-slate-800">Offline Payments</p>
+                            <p className="text-xs text-slate-600">Make secure payments without internet connection</p>
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <svg className="w-5 h-5 text-[#91C8CA] flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                          </svg>
+                          <div>
+                            <p className="text-sm font-semibold text-slate-800">Hash Chain Security</p>
+                            <p className="text-xs text-slate-600">1000-iteration SHA256 prevents replay attacks</p>
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <svg className="w-5 h-5 text-[#91C8CA] flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                          </svg>
+                          <div>
+                            <p className="text-sm font-semibold text-slate-800">Multi-Token Support</p>
+                            <p className="text-xs text-slate-600">Pay with U2U, USDC, or USDT</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Network Info Card */}
+                    <div className="rounded-[28px] border border-[#6B9EF5]/25 bg-gradient-to-br from-[#6B9EF5]/8 via-white/95 to-white/90 backdrop-blur-xl p-6 shadow-xl shadow-[#6B9EF5]/15">
+                      <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                        <svg className="w-5 h-5 text-[#6B9EF5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                        </svg>
+                        Network Info
+                      </h3>
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs text-slate-600">Network</span>
+                          <span className="text-sm font-semibold text-slate-800">U2U Solaris</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs text-slate-600">Chain ID</span>
+                          <span className="text-sm font-semibold text-slate-800">39</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs text-slate-600">Contract</span>
+                          <a 
+                            href="https://u2uscan.xyz/address/0x4690cb265Bc3C12fD218670DfBDC4571d2C5a6B5"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm font-mono text-[#6B9EF5] hover:underline"
+                          >
+                            0x4690...a6B5
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </>
                 )}
               </div>
             </div>

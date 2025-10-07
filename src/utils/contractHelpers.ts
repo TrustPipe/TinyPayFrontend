@@ -5,9 +5,7 @@
 import { 
   PublicClient, 
   WalletClient, 
-  parseUnits,
   Hex,
-  encodeFunctionData
 } from 'viem';
 import { ethers } from 'ethers';
 import {
@@ -16,6 +14,7 @@ import {
   ERC20_ABI,
   SUPPORTED_TOKENS,
   amountToWei,
+  u2uNetwork,
 } from '@/config/u2u';
 
 /**
@@ -64,6 +63,7 @@ export async function approveToken(
     functionName: 'approve',
     args: [TINYPAY_CONTRACT_ADDRESS, amount],
     account: walletClient.account,
+    chain: u2uNetwork,
   });
 
   console.log(`Approve transaction sent: ${hash}`);
@@ -122,6 +122,7 @@ export async function depositToTinyPay(
     functionName: 'deposit';
     args: [`0x${string}`, bigint, Hex];
     account: typeof walletClient.account;
+    chain: typeof u2uNetwork;
     value?: bigint;
   } = {
     address: TINYPAY_CONTRACT_ADDRESS,
@@ -133,6 +134,7 @@ export async function depositToTinyPay(
       tailBytes,
     ],
     account: walletClient.account,
+    chain: u2uNetwork,
   };
 
   // 如果是原生代币，需要发送 value

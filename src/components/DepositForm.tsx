@@ -1,31 +1,40 @@
 "use client";
 
 import { useState } from "react";
-import { useWallet } from "@aptos-labs/wallet-adapter-react";
+import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import { completePaymentWorkflow, saveHashChain } from "@/utils/hashChain";
-import { CONTRACT_ADDRESS, amountToContractUnits, getAssetMetadata } from "@/utils/contract";
+import { completeDepositFlow } from "@/utils/contractHelpers";
+import { SUPPORTED_TOKENS } from "@/config/u2u";
 
 /**
- * TinyPay Deposit Form Component
+ * TinyPay Deposit Form Component (U2U Network)
  * Features:
  * 1. User inputs amount
  * 2. User inputs password
  * 3. SHA256 hash computation 1000 times
- * 4. Convert to bytecode
- * 5. Call deposit interface
+ * 4. Convert to bytecode (32 bytes raw hash)
+ * 5. Call deposit interface (with auto-approve for ERC20)
  */
 export function DepositForm() {
-  const { account, signAndSubmitTransaction } = useWallet();
+  const { address: account, isConnected } = useAccount();
+  const publicClient = usePublicClient();
+  const { data: walletClient } = useWalletClient();
+  
   const [amount, setAmount] = useState("");
   const [password, setPassword] = useState("");
-  const [asset, setAsset] = useState<"APT" | "USDC">("APT");
+  const [asset, setAsset] = useState<"U2U" | "USDC" | "USDT">("U2U");
   const [loading, setLoading] = useState(false);
   const [lastHashResult, setLastHashResult] = useState("");
   const [status, setStatus] = useState("");
 
   const handleDeposit = async () => {
-    if (!account) {
+    if (!isConnected || !account) {
       setStatus("❌ Please connect your wallet first");
+      return;
+    }
+
+    if (!publicClient || !walletClient) {
+      setStatus("❌ Wallet client not ready");
       return;
     }
 
@@ -35,7 +44,7 @@ export function DepositForm() {
     }
 
     if (!password || password.length < 6) {
-      setStatus("❌ Please enter a password with at least 6 characters");
+      setStatus("❌ Password must be at least 6 characters");
       return;
     }
 
@@ -43,8 +52,7 @@ export function DepositForm() {
       setLoading(true);
       setStatus("⏳ Generating hash chain...");
 
-      // Step 1 & 2: Generate seed (only password, same as Python script)
-      // Note: Same password will generate the same hash result
+      // Step 1 & 2: Generate seed (only password)
       const userSeed = password;
       
       // Step 3: SHA256 hash computation 1000 times
@@ -61,55 +69,39 @@ export function DepositForm() {
         return;
       }
 
-      // Step 4: Get bytecode (use ASCII bytes for contract)
-      // Contract expects ASCII representation of hex string, not raw bytes
-      const tailBytes = workflow.tailAsciiBytes;
-      console.log("✅ Bytecode ready (ASCII bytes):", tailBytes.length, "bytes");
+      // Step 4: Get tail hex string (for UTF-8 encoding)
+      const tailHexString = workflow.tailHex;
+      console.log("✅ Tail hex string ready:", tailHexString);
 
-      // Step 5: Call deposit interface
-      setStatus("⏳ Calling contract...");
+      // Step 5: Call deposit interface (with auto-approve for ERC20)
+      setStatus("⏳ Preparing contract call...");
       
-      // Get asset metadata address
-      const assetMetadata = getAssetMetadata(asset);
-      const contractAmount = amountToContractUnits(parseFloat(amount), asset);
-      
-      console.log("📝 Building transaction with arguments:");
+      const tokenConfig = SUPPORTED_TOKENS[asset];
+      console.log("📝 Building transaction parameters:");
       console.log("  - Asset:", asset);
-      console.log("  - Function:", `${CONTRACT_ADDRESS}::tinypay::deposit`);
-      console.log("  - Signer (auto):", account.address);
-      console.log("  - arg0 (Object<Metadata>):", assetMetadata);
-      console.log("  - arg1 (u64):", contractAmount);
-      console.log("  - arg2 (vector<u8>):", Array.from(tailBytes));
-      console.log("  - arg2 length:", tailBytes.length);
+      console.log("  - Token address:", tokenConfig.address);
+      console.log("  - Amount:", amount, asset);
+      console.log("  - Tail hex string:", tailHexString);
+      console.log("  - Is native:", tokenConfig.isNative);
       
-      setStatus("⏳ Building transaction...");
-      
-      // Use wallet adapter's signAndSubmitTransaction with new API format
-      // deposit(&signer, token_metadata, amount, tail_bytes)
-      // signer is automatically passed (connected wallet)
-      console.log("📝 Transaction built successfully, awaiting signature...");
-      const response = await signAndSubmitTransaction({
-        data: {
-          function: `${CONTRACT_ADDRESS}::tinypay::deposit`,
-          functionArguments: [
-            assetMetadata,        // arg0: Object<Metadata> (0xA for APT)
-            contractAmount,       // arg1: u64 (amount)
-            Array.from(tailBytes) // arg2: vector<u8> (tail bytes)
-          ]
+      // Complete deposit flow (with auto-approve)
+      const txHash = await completeDepositFlow(
+        publicClient,
+        walletClient,
+        asset,
+        parseFloat(amount),
+        tailHexString,
+        (progressStatus) => {
+          setStatus(progressStatus);
         }
-      } as never);
+      );
       
-      console.log("✅ Transaction submitted:", response);
-      
-      // Extract transaction hash from response
-      const txHash = typeof response === 'object' && response !== null && 'hash' in response 
-        ? String(response.hash) 
-        : JSON.stringify(response).slice(0, 50);
+      console.log("✅ Transaction submitted:", txHash);
       
       // Save hash chain to local storage
-      saveHashChain(String(account.address), workflow.hashes);
+      saveHashChain(account, workflow.hashes);
       
-      setStatus(`✅ Deposit successful! Transaction hash: ${txHash}`);
+      setStatus(`✅ Deposit successful! Tx hash: ${txHash}`);
       
       // Clear form
       setAmount("");
@@ -124,87 +116,118 @@ export function DepositForm() {
     }
   };
 
+  // 获取资产的输入步长和示例
+  const getAssetInputConfig = () => {
+    const token = SUPPORTED_TOKENS[asset];
+    if (token.isNative) {
+      return {
+        step: "0.000000000000000001", // 18 decimals
+        example: "0.1",
+        hint: `1 U2U = 10^18 wei (18 位小数)`
+      };
+    } else {
+      return {
+        step: "0.000001", // 6 decimals
+        example: "10.5",
+        hint: `${asset} 使用 6 位小数`
+      };
+    }
+  };
+
+  const inputConfig = getAssetInputConfig();
+
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6 space-y-4">
-      <h2 className="text-2xl font-bold text-gray-800">💰 Deposit to TinyPay</h2>
+    <div className="space-y-4">
+      <h2 className="text-lg font-semibold text-slate-900">💰 Quick Deposit</h2>
       
       {/* Asset Selection */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-xs font-medium text-slate-700 mb-2">
           Select Asset
         </label>
-        <div className="flex gap-4">
+        <div className="flex gap-2">
           <button
-            onClick={() => setAsset("APT")}
+            onClick={() => setAsset("U2U")}
             disabled={loading}
-            className={`flex-1 px-4 py-3 rounded-lg font-semibold transition ${
-              asset === "APT"
-                ? "bg-blue-600 text-white"
-                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+            className={`flex-1 px-3 py-2 rounded-lg font-semibold text-sm transition ${
+              asset === "U2U"
+                ? "bg-gradient-to-br from-[#91C8CA] to-[#9FE0D1] text-white shadow-md"
+                : "bg-white/60 text-slate-700 hover:bg-white/80 border border-[#91C8CA]/20"
             }`}
           >
-            🪙 APT
+            💎 U2U
           </button>
           <button
             onClick={() => setAsset("USDC")}
             disabled={loading}
-            className={`flex-1 px-4 py-3 rounded-lg font-semibold transition ${
+            className={`flex-1 px-3 py-2 rounded-lg font-semibold text-sm transition ${
               asset === "USDC"
-                ? "bg-blue-600 text-white"
-                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                ? "bg-gradient-to-br from-[#91C8CA] to-[#9FE0D1] text-white shadow-md"
+                : "bg-white/60 text-slate-700 hover:bg-white/80 border border-[#91C8CA]/20"
             }`}
           >
             💵 USDC
+          </button>
+          <button
+            onClick={() => setAsset("USDT")}
+            disabled={loading}
+            className={`flex-1 px-3 py-2 rounded-lg font-semibold text-sm transition ${
+              asset === "USDT"
+                ? "bg-gradient-to-br from-[#91C8CA] to-[#9FE0D1] text-white shadow-md"
+                : "bg-white/60 text-slate-700 hover:bg-white/80 border border-[#91C8CA]/20"
+            }`}
+          >
+            💰 USDT
           </button>
         </div>
       </div>
 
       {/* Amount Input */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-xs font-medium text-slate-700 mb-2">
           Amount ({asset})
         </label>
         <input
           type="number"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
-          placeholder={`Enter amount, e.g. ${asset === "APT" ? "1" : "10.5"}`}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+          placeholder={`e.g. ${inputConfig.example}`}
+          className="w-full px-4 py-2.5 border border-[#91C8CA]/30 rounded-xl focus:ring-2 focus:ring-[#91C8CA]/50 focus:border-[#91C8CA]/50 bg-white/80 backdrop-blur-sm text-slate-900 text-sm placeholder:text-slate-400"
           disabled={loading}
           min="0"
-          step={asset === "APT" ? "0.00000001" : "0.01"}
+          step={inputConfig.step}
         />
-        <p className="text-xs text-gray-500 mt-1">
-          💡 {asset === "APT" ? "1 APT = 100,000,000 octas (8 decimals)" : "Test USDC with 8 decimals"}
+        <p className="text-xs text-slate-500 mt-1">
+          {inputConfig.hint}
         </p>
       </div>
 
       {/* Password Input */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Password (at least 6 characters)
+        <label className="block text-xs font-medium text-slate-700 mb-2">
+          Password (min 6 characters)
         </label>
         <input
           type="text"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Enter password"
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+          className="w-full px-4 py-2.5 border border-[#91C8CA]/30 rounded-xl focus:ring-2 focus:ring-[#91C8CA]/50 focus:border-[#91C8CA]/50 bg-white/80 backdrop-blur-sm text-slate-900 text-sm placeholder:text-slate-400"
           disabled={loading}
           minLength={6}
         />
-        <p className="text-xs text-gray-500 mt-1">
-          💡 This password will be used to generate a unique payment hash chain
+        <p className="text-xs text-slate-500 mt-1">
+          Used to generate unique payment hash chain
         </p>
       </div>
 
       {/* Hash Result Display */}
       {lastHashResult && (
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-          <p className="text-sm font-medium text-green-800 mb-2">
-            🔐 SHA256 Hash Result (after 1000 iterations):
+        <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200/50 rounded-xl p-3">
+          <p className="text-xs font-medium text-green-700 mb-1.5">
+            🔐 Hash Result (1000 iterations)
           </p>
-          <code className="block text-xs text-green-700 break-all bg-white p-2 rounded">
+          <code className="block text-[10px] text-green-600 break-all bg-white/70 p-2 rounded-lg font-mono">
             {lastHashResult}
           </code>
         </div>
@@ -213,40 +236,28 @@ export function DepositForm() {
       {/* Submit Button */}
       <button
         onClick={handleDeposit}
-        disabled={loading || !account}
-        className={`w-full py-3 px-4 rounded-lg font-semibold transition ${
-          loading || !account
-            ? "bg-gray-400 text-gray-200 cursor-not-allowed"
-            : "bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800"
+        disabled={loading || !isConnected}
+        className={`w-full py-3 px-4 rounded-xl font-semibold text-sm transition shadow-lg ${
+          loading || !isConnected
+            ? "bg-slate-300 text-slate-500 cursor-not-allowed"
+            : "bg-gradient-to-br from-[#91C8CA] via-[#9FE0D1] to-[#D3A86C] text-white hover:shadow-xl hover:shadow-[#91C8CA]/40 hover:-translate-y-0.5 shadow-[#91C8CA]/30"
         }`}
       >
-        {loading ? "⏳ Processing..." : "Deposit"}
+        {loading ? "⏳ Processing..." : "💰 Deposit Now"}
       </button>
 
       {/* Status Display */}
       {status && (
-        <div className={`p-4 rounded-lg ${
+        <div className={`p-3 rounded-xl ${
           status.startsWith("✅") 
-            ? "bg-green-50 border border-green-200 text-green-800"
+            ? "bg-green-50 border border-green-200/50 text-green-700"
             : status.startsWith("❌")
-            ? "bg-red-50 border border-red-200 text-red-800"
-            : "bg-blue-50 border border-blue-200 text-blue-800"
+            ? "bg-red-50 border border-red-200/50 text-red-700"
+            : "bg-blue-50 border border-blue-200/50 text-blue-700"
         }`}>
-          <p className="text-sm whitespace-pre-wrap break-all">{status}</p>
+          <p className="text-xs whitespace-pre-wrap break-all">{status}</p>
         </div>
       )}
-
-      {/* Instructions */}
-      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-        <p className="text-xs text-gray-600 space-y-1">
-          <span className="block font-semibold mb-2">📋 Process Flow:</span>
-          <span className="block">1️⃣ Enter deposit amount</span>
-          <span className="block">2️⃣ Enter password (for hash chain generation)</span>
-          <span className="block">3️⃣ System performs SHA256 hash computation 1000 times</span>
-          <span className="block">4️⃣ Convert to bytecode (background processing)</span>
-          <span className="block">5️⃣ Call deposit contract to complete deposit</span>
-        </p>
-      </div>
     </div>
   );
 }

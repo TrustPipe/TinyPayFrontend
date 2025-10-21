@@ -1,40 +1,40 @@
 "use client";
 
 import { useState } from "react";
-import { useAccount, usePublicClient, useWalletClient } from "wagmi";
+import dynamic from 'next/dynamic';
+import { useWallet, useConnection } from '@solana/wallet-adapter-react';
+import { AnchorProvider } from '@coral-xyz/anchor';
 import { completePaymentWorkflow, saveHashChain } from "@/utils/hashChain";
-import { completeDepositFlow } from "@/utils/contractHelpers";
-import { SUPPORTED_TOKENS } from "@/config/u2u";
+import { depositSOL } from "@/utils/solanaHelpers";
+
+// 动态导入钱包按钮，禁用 SSR
+const WalletMultiButton = dynamic(
+  async () => (await import('@solana/wallet-adapter-react-ui')).WalletMultiButton,
+  { ssr: false }
+);
 
 /**
- * TinyPay Deposit Form Component (U2U Network)
+ * TinyPay Deposit Form Component (Solana Network)
  * Features:
  * 1. User inputs amount
  * 2. User inputs password
  * 3. SHA256 hash computation 1000 times
- * 4. Convert to bytecode (32 bytes raw hash)
- * 5. Call deposit interface (with auto-approve for ERC20)
+ * 4. Convert to bytecode (64 bytes)
+ * 5. Call deposit interface on Solana
  */
 export function DepositForm() {
-  const { address: account, isConnected } = useAccount();
-  const publicClient = usePublicClient();
-  const { data: walletClient } = useWalletClient();
+  const { publicKey, signTransaction, signAllTransactions } = useWallet();
+  const { connection } = useConnection();
   
   const [amount, setAmount] = useState("");
   const [password, setPassword] = useState("");
-  const [asset, setAsset] = useState<"U2U" | "USDC" | "USDT">("U2U");
   const [loading, setLoading] = useState(false);
   const [lastHashResult, setLastHashResult] = useState("");
   const [status, setStatus] = useState("");
 
   const handleDeposit = async () => {
-    if (!isConnected || !account) {
+    if (!publicKey || !signTransaction || !signAllTransactions) {
       setStatus("❌ Please connect your wallet first");
-      return;
-    }
-
-    if (!publicClient || !walletClient) {
-      setStatus("❌ Wallet client not ready");
       return;
     }
 
@@ -54,55 +54,48 @@ export function DepositForm() {
 
       // Step 1 & 2: Generate seed (only password)
       const userSeed = password;
-      
+
       // Step 3: SHA256 hash computation 1000 times
       console.log("🔐 Starting SHA256 hash computation (1000 iterations)...");
       const workflow = await completePaymentWorkflow(userSeed, 1000);
-      
+
       // Display final hash result on screen
       setLastHashResult(workflow.tailHex);
       console.log("✅ Hash computation completed");
-      
+
       if (!workflow.verificationOk) {
         setStatus("❌ Hash chain verification failed!");
         setLoading(false);
         return;
       }
 
-      // Step 4: Get tail hex string (for UTF-8 encoding)
-      const tailHexString = workflow.tailHex;
-      console.log("✅ Tail hex string ready:", tailHexString);
+      // Step 4: Get tail ASCII bytes (hex 字符串的 ASCII 表示，64 字节)
+      const tailBytes = workflow.tailAsciiBytes;
+      console.log("✅ Tail ASCII bytes ready, length:", tailBytes.length);
 
-      // Step 5: Call deposit interface (with auto-approve for ERC20)
-      setStatus("⏳ Preparing contract call...");
-      
-      const tokenConfig = SUPPORTED_TOKENS[asset];
-      console.log("📝 Building transaction parameters:");
-      console.log("  - Asset:", asset);
-      console.log("  - Token address:", tokenConfig.address);
-      console.log("  - Amount:", amount, asset);
-      console.log("  - Tail hex string:", tailHexString);
-      console.log("  - Is native:", tokenConfig.isNative);
-      
-      // Complete deposit flow (with auto-approve)
-      const txHash = await completeDepositFlow(
-        publicClient,
-        walletClient,
-        asset,
-        parseFloat(amount),
-        tailHexString,
-        (progressStatus) => {
-          setStatus(progressStatus);
-        }
+      // Step 5: Create Anchor provider
+      setStatus("⏳ Preparing transaction...");
+      const provider = new AnchorProvider(
+        connection,
+        { publicKey, signTransaction, signAllTransactions },
+        { commitment: 'confirmed' }
       );
-      
-      console.log("✅ Transaction submitted:", txHash);
-      
+
+      // Step 6: Call deposit on Solana
+      setStatus("⏳ Please confirm transaction in wallet...");
+      const txSignature = await depositSOL(
+        provider,
+        parseFloat(amount),
+        tailBytes
+      );
+
+      console.log("✅ Transaction submitted:", txSignature);
+
       // Save hash chain to local storage
-      saveHashChain(account, workflow.hashes);
-      
-      setStatus(`✅ Deposit successful! Tx hash: ${txHash}`);
-      
+      saveHashChain(publicKey.toString(), workflow.hashes);
+
+      setStatus(`✅ Deposit successful! Signature: ${txSignature}`);
+
       // Clear form
       setAmount("");
       setPassword("");
@@ -116,89 +109,33 @@ export function DepositForm() {
     }
   };
 
-  // 获取资产的输入步长和示例
-  const getAssetInputConfig = () => {
-    const token = SUPPORTED_TOKENS[asset];
-    if (token.isNative) {
-      return {
-        step: "0.000000000000000001", // 18 decimals
-        example: "0.1",
-        hint: `1 U2U = 10^18 wei (18 位小数)`
-      };
-    } else {
-      return {
-        step: "0.000001", // 6 decimals
-        example: "10.5",
-        hint: `${asset} 使用 6 位小数`
-      };
-    }
-  };
-
-  const inputConfig = getAssetInputConfig();
 
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-semibold text-slate-900">💰 Quick Deposit</h2>
-      
-      {/* Asset Selection */}
+      <h2 className="text-lg font-semibold text-slate-900">💰 Quick Deposit (SOL)</h2>
+
+      {/* Wallet Connect Button */}
       <div>
-        <label className="block text-xs font-medium text-slate-700 mb-2">
-          Select Asset
-        </label>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setAsset("U2U")}
-            disabled={loading}
-            className={`flex-1 px-3 py-2 rounded-lg font-semibold text-sm transition ${
-              asset === "U2U"
-                ? "bg-gradient-to-br from-[#91C8CA] to-[#9FE0D1] text-white shadow-md"
-                : "bg-white/60 text-slate-700 hover:bg-white/80 border border-[#91C8CA]/20"
-            }`}
-          >
-            💎 U2U
-          </button>
-          <button
-            onClick={() => setAsset("USDC")}
-            disabled={loading}
-            className={`flex-1 px-3 py-2 rounded-lg font-semibold text-sm transition ${
-              asset === "USDC"
-                ? "bg-gradient-to-br from-[#91C8CA] to-[#9FE0D1] text-white shadow-md"
-                : "bg-white/60 text-slate-700 hover:bg-white/80 border border-[#91C8CA]/20"
-            }`}
-          >
-            💵 USDC
-          </button>
-          <button
-            onClick={() => setAsset("USDT")}
-            disabled={loading}
-            className={`flex-1 px-3 py-2 rounded-lg font-semibold text-sm transition ${
-              asset === "USDT"
-                ? "bg-gradient-to-br from-[#91C8CA] to-[#9FE0D1] text-white shadow-md"
-                : "bg-white/60 text-slate-700 hover:bg-white/80 border border-[#91C8CA]/20"
-            }`}
-          >
-            💰 USDT
-          </button>
-        </div>
+        <WalletMultiButton className="!bg-gradient-to-br !from-[#91C8CA] !to-[#9FE0D1] !rounded-full !shadow-lg !shadow-[#91C8CA]/30 hover:!shadow-xl hover:!shadow-[#91C8CA]/40 !transition-all !w-full" />
       </div>
 
       {/* Amount Input */}
       <div>
         <label className="block text-xs font-medium text-slate-700 mb-2">
-          Amount ({asset})
+          Amount (SOL)
         </label>
         <input
           type="number"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
-          placeholder={`e.g. ${inputConfig.example}`}
+          placeholder="e.g. 0.1"
           className="w-full px-4 py-2.5 border border-[#91C8CA]/30 rounded-xl focus:ring-2 focus:ring-[#91C8CA]/50 focus:border-[#91C8CA]/50 bg-white/80 backdrop-blur-sm text-slate-900 text-sm placeholder:text-slate-400"
           disabled={loading}
           min="0"
-          step={inputConfig.step}
+          step="0.000000001"
         />
         <p className="text-xs text-slate-500 mt-1">
-          {inputConfig.hint}
+          1 SOL = 10^9 lamports (9 decimals)
         </p>
       </div>
 
@@ -236,9 +173,9 @@ export function DepositForm() {
       {/* Submit Button */}
       <button
         onClick={handleDeposit}
-        disabled={loading || !isConnected}
+        disabled={loading || !publicKey}
         className={`w-full py-3 px-4 rounded-xl font-semibold text-sm transition shadow-lg ${
-          loading || !isConnected
+          loading || !publicKey
             ? "bg-slate-300 text-slate-500 cursor-not-allowed"
             : "bg-gradient-to-br from-[#91C8CA] via-[#9FE0D1] to-[#D3A86C] text-white hover:shadow-xl hover:shadow-[#91C8CA]/40 hover:-translate-y-0.5 shadow-[#91C8CA]/30"
         }`}

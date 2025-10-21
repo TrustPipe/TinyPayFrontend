@@ -2,11 +2,11 @@
 
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { useAccount, useBalance } from "wagmi";
+import { useWallet, useConnection } from '@solana/wallet-adapter-react';
+import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 import VantaBackground from "@/components/VantaBackground";
 import { WalletButton } from "@/components/WalletButton";
 import { DepositForm } from "@/components/DepositForm";
-import { u2uNetwork } from "@/config/u2u";
 
 const journey = [
   {
@@ -98,12 +98,21 @@ const FIRST_SECTION_HEIGHT = "flex min-h-screen flex-col justify-start py-16";
 const LAST_SECTION_HEIGHT = "flex min-h-[calc(100vh-84px-8rem)] flex-col justify-center py-16";
 
 export default function Home() {
-  const { address: account, isConnected } = useAccount();
-  const { data: balanceData } = useBalance({
-    address: account,
-    chainId: u2uNetwork.id,
-  });
+  const { publicKey, connected } = useWallet();
+  const { connection } = useConnection();
+  const [balance, setBalance] = useState<number>(0);
   const [isScrolled, setIsScrolled] = useState(false);
+
+  // Fetch balance
+  useEffect(() => {
+    if (publicKey && connection) {
+      connection.getBalance(publicKey).then(bal => {
+        setBalance(bal / LAMPORTS_PER_SOL);
+      }).catch(err => {
+        console.error('Failed to get balance:', err);
+      });
+    }
+  }, [publicKey, connection]);
 
   // Monitor scroll position
   useEffect(() => {
@@ -181,7 +190,7 @@ export default function Home() {
                 Offline-first crypto payments
               </div>
               <h1 className="text-5xl font-semibold tracking-tight text-slate-900 md:text-7xl leading-relaxed md:leading-relaxed">
-                <span className="text-6xl md:text-8xl italic tracking-widest bg-gradient-to-r from-[#D3A86C] via-[#91C8CA] via-[#9FE0D1] to-[#D3A86C] bg-clip-text text-transparent">Pay</span> anywhere. Settle on U2U when <span className="bg-gradient-to-r from-[#D3A86C] via-[#91C8CA] via-[#9FE0D1] to-[#D3A86C] bg-clip-text text-transparent">back online</span>.
+                <span className="text-6xl md:text-8xl italic tracking-widest bg-gradient-to-r from-[#D3A86C] via-[#91C8CA] via-[#9FE0D1] to-[#D3A86C] bg-clip-text text-transparent">Pay</span> anywhere. Settle on Solana when <span className="bg-gradient-to-r from-[#D3A86C] via-[#91C8CA] via-[#9FE0D1] to-[#D3A86C] bg-clip-text text-transparent">back online</span>.
               </h1>
               <p className="max-w-2xl text-lg leading-relaxed text-slate-600">
                 TinyPay blends on-chain security with a cash-like offline experience. Generate single-use payment codes that merchants trust instantly—and the blockchain settles the rest.
@@ -191,13 +200,13 @@ export default function Home() {
               <div className="relative w-full max-w-lg space-y-6 max-h-[calc(100vh-12rem)] overflow-y-auto overscroll-contain scrollbar-thin scrollbar-thumb-[#91C8CA]/30 scrollbar-track-transparent">
                 {/* Card 1: Wallet Info */}
                 <div className="rounded-[32px] border border-[#F2B92C]/30 bg-gradient-to-br from-[#F2B92C]/60 to-[#E8A91C]/70 backdrop-blur-xl p-6 text-white shadow-lg shadow-[#F2B92C]/40">
-                  {isConnected && account ? (
+                  {connected && publicKey ? (
                     <>
                       <div className="flex items-center justify-between mb-4">
                         <span className="text-lg font-semibold">Wallet Info</span>
                         <div className="flex items-center gap-2">
                           <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-medium">
-                            U2U Network
+                            Solana Devnet
                           </span>
                         </div>
                       </div>
@@ -205,13 +214,13 @@ export default function Home() {
                         <div>
                           <p className="text-xs opacity-75">Balance</p>
                           <p className="text-3xl font-bold">
-                            {balanceData ? parseFloat(balanceData.formatted).toFixed(4) : "0.0000"} <span className="text-xl">U2U</span>
+                            {balance.toFixed(4)} <span className="text-xl">SOL</span>
                           </p>
                         </div>
                         <div>
                           <p className="text-xs opacity-75">Address</p>
                           <p className="text-sm font-mono opacity-90">
-                            {account.slice(0, 8)}...{account.slice(-6)}
+                            {publicKey.toString().slice(0, 8)}...{publicKey.toString().slice(-6)}
                           </p>
                         </div>
                       </div>
@@ -230,7 +239,7 @@ export default function Home() {
                 </div>
 
                 {/* Card 2: Deposit Form or Getting Started */}
-                {isConnected ? (
+                {connected ? (
                   <div className="rounded-[28px] border border-[#91C8CA]/30 bg-gradient-to-br from-[#9FE0D1]/12 via-white/95 to-[#D3A86C]/8 backdrop-blur-xl p-6 shadow-xl shadow-[#91C8CA]/20">
                     <DepositForm />
                   </div>
@@ -251,7 +260,7 @@ export default function Home() {
                           </div>
                           <div>
                             <p className="text-sm font-semibold text-slate-800 mb-1">Connect Your Wallet</p>
-                            <p className="text-xs text-slate-600">Use MetaMask or any Web3 wallet to connect to U2U Network</p>
+                            <p className="text-xs text-slate-600">Use Phantom or Solflare wallet to connect to Solana</p>
                           </div>
                         </div>
                         <div className="flex gap-3">
@@ -260,7 +269,7 @@ export default function Home() {
                           </div>
                           <div>
                             <p className="text-sm font-semibold text-slate-800 mb-1">Deposit Funds</p>
-                            <p className="text-xs text-slate-600">Add U2U, USDC, or USDT to your TinyPay account</p>
+                            <p className="text-xs text-slate-600">Add SOL to your TinyPay account</p>
                           </div>
                         </div>
                         <div className="flex gap-3">
@@ -308,7 +317,7 @@ export default function Home() {
                           </svg>
                           <div>
                             <p className="text-sm font-semibold text-slate-800">Multi-Token Support</p>
-                            <p className="text-xs text-slate-600">Pay with U2U, USDC, or USDT</p>
+                            <p className="text-xs text-slate-600">Pay with SOL (SPL tokens coming soon)</p>
                           </div>
                         </div>
                       </div>
@@ -325,22 +334,22 @@ export default function Home() {
                       <div className="space-y-2">
                         <div className="flex justify-between items-center">
                           <span className="text-xs text-slate-600">Network</span>
-                          <span className="text-sm font-semibold text-slate-800">U2U Solaris</span>
+                          <span className="text-sm font-semibold text-slate-800">Solana Devnet</span>
                         </div>
                         <div className="flex justify-between items-center">
-                          <span className="text-xs text-slate-600">Chain ID</span>
-                          <span className="text-sm font-semibold text-slate-800">39</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-xs text-slate-600">Contract</span>
-                          <a 
-                            href="https://u2uscan.xyz/address/0x4690cb265Bc3C12fD218670DfBDC4571d2C5a6B5"
+                          <span className="text-xs text-slate-600">Program</span>
+                          <a
+                            href="https://explorer.solana.com/address/88oZkwPMg9iWjPTUqYJXkRE2JYmFEvRraC6vYTcH9CGH?cluster=devnet"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-sm font-mono text-[#6B9EF5] hover:underline"
                           >
-                            0x4690...a6B5
+                            88oZk...H9CGH
                           </a>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs text-slate-600">RPC</span>
+                          <span className="text-sm font-semibold text-slate-800">Devnet</span>
                         </div>
                       </div>
                     </div>

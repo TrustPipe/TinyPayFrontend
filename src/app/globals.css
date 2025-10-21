@@ -94,3 +94,26 @@ body {
   scrollbar-width: thin;
   scrollbar-color: rgba(145, 200, 202, 0.3) transparent;
 }
+
+/* Solana Wallet Adapter 按钮圆角优化 */
+.wallet-adapter-button,
+.wallet-adapter-button-trigger {
+  border-radius: 9999px !important;
+}
+
+.wallet-adapter-dropdown {
+  border-radius: 1.5rem !important;
+}
+
+.wallet-adapter-dropdown-list {
+  border-radius: 1.5rem !important;
+  overflow: hidden !important;
+}
+
+.wallet-adapter-modal-wrapper {
+  border-radius: 1.5rem !important;
+}
+
+.wallet-adapter-modal-list li button {
+  border-radius: 0.75rem !important;
+}

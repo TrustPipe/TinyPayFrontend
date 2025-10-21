@@ -11,7 +11,13 @@
   "dependencies": {
     "@aptos-labs/ts-sdk": "^1.39.0",
     "@aptos-labs/wallet-adapter-react": "^7.1.0",
+    "@coral-xyz/anchor": "^0.32.1",
     "@rainbow-me/rainbowkit": "^2.2.8",
+    "@solana/wallet-adapter-base": "^0.9.27",
+    "@solana/wallet-adapter-react": "^0.15.39",
+    "@solana/wallet-adapter-react-ui": "^0.9.39",
+    "@solana/wallet-adapter-wallets": "^0.19.37",
+    "@solana/web3.js": "^1.98.4",
     "@tanstack/react-query": "^5.90.2",
     "ethers": "^6.15.0",
     "next": "15.5.4",

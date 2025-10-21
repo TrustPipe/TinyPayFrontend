@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { WagmiProvider } from "@/context/WagmiProvider";
+import { SolanaProvider } from "@/context/SolanaProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "TinyPay",
-  description: "Pay offline, settle on U2U Network",
+  description: "Pay offline, settle on Solana",
 };
 
 export default function RootLayout({
@@ -28,9 +28,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <WagmiProvider>
+        <SolanaProvider>
           {children}
-        </WagmiProvider>
+        </SolanaProvider>
       </body>
     </html>
   );

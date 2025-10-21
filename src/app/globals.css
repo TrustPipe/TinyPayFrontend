@@ -96,8 +96,14 @@ body {
 }
 
 /* Solana Wallet Adapter 按钮圆角优化 */
+.wallet-button-wrapper button,
+.wallet-button-wrapper .wallet-adapter-button,
 .wallet-adapter-button,
 .wallet-adapter-button-trigger {
+  border-radius: 9999px !important;
+}
+
+.wallet-button-wrapper .wallet-adapter-button-trigger {
   border-radius: 9999px !important;
 }
 

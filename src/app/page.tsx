@@ -31,6 +31,42 @@ const journey = [
   },
 ];
 
+const keyFeatures = [
+  {
+    title: "No Signature Required",
+    description: "Users don't need to worry about network security or malicious transaction content. Pay with confidence without signing every transaction.",
+    icon: "shield"
+  },
+  {
+    title: "Offline Payments",
+    description: "Make payments even without internet connection. TinyPay works anywhere, anytime.",
+    icon: "offline"
+  },
+  {
+    title: "Save to Earn",
+    description: "Your deposited funds automatically earn yield through DeFi protocols. Your money grows while you spend.",
+    icon: "savings"
+  }
+];
+
+const businessModels = [
+  {
+    title: "DeFi Save to Earn",
+    description: "User funds deposited in the contract automatically generate yield through DeFi protocols. We earn revenue by taking a percentage of the interest generated.",
+    icon: "chart"
+  },
+  {
+    title: "Custom Hardware",
+    description: "Upgrade from mobile app payments to dedicated POS scanning machines for merchants, providing a more professional checkout experience.",
+    icon: "hardware"
+  },
+  {
+    title: "Value-Added Services",
+    description: "We provide premium services including inventory management and data analytics to help merchants grow their business.",
+    icon: "services"
+  }
+];
+
 const faqs = [
   {
     question: "How does TinyPay work without internet?",
@@ -62,7 +98,8 @@ export default function Home() {
   const { publicKey, connected } = useWallet();
   const { connection } = useConnection();
   const [balance, setBalance] = useState<number>(0);
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [isNavVisible, setIsNavVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
   // Fetch balance
   useEffect(() => {
@@ -75,15 +112,28 @@ export default function Home() {
     }
   }, [publicKey, connection]);
 
-  // Monitor scroll position
+  // Monitor scroll direction
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      const currentScrollY = window.scrollY;
+
+      // Show nav when at top
+      if (currentScrollY < 10) {
+        setIsNavVisible(true);
+      }
+      // Hide when scrolling down, show when scrolling up
+      else if (currentScrollY > lastScrollY) {
+        setIsNavVisible(false);
+      } else {
+        setIsNavVisible(true);
+      }
+
+      setLastScrollY(currentScrollY);
     };
-    
-    window.addEventListener('scroll', handleScroll);
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [lastScrollY]);
 
   return (
     <div className="relative bg-[#f5f7fb] text-slate-900">
@@ -95,8 +145,8 @@ export default function Home() {
           <div className="absolute top-[100vh] left-0 w-[150vw] h-[100vh] bg-gradient-to-tr from-[#6B9EF5]/10 via-transparent to-[#F2B92C]/8 blur-[120px]" />
         </div>
       </div>
-      <header className={`sticky top-0 z-50 transition-all duration-300 ${
-        isScrolled ? 'backdrop-blur-md bg-white/30' : 'bg-transparent'
+      <header className={`sticky top-0 z-50 transition-transform duration-300 bg-transparent ${
+        isNavVisible ? 'translate-y-0' : '-translate-y-full'
       }`}>
         <div className="flex items-center justify-between px-6 py-5">
           <div className="flex items-center gap-3">
@@ -112,34 +162,31 @@ export default function Home() {
               href="https://tinyurl.com/tinypay-demo"
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden sm:inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#F2B92C]/25 via-[#F2B92C]/20 to-[#6B9EF5]/20 backdrop-blur-xl border border-[#F2B92C]/40 px-4 py-2 text-xs font-semibold text-slate-800 shadow-md shadow-[#F2B92C]/20 hover:shadow-lg hover:shadow-[#F2B92C]/30 transition-all"
+              className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-[#F2B92C]/25 via-[#F2B92C]/20 to-[#6B9EF5]/20 backdrop-blur-xl border border-[#F2B92C]/40 text-slate-800 shadow-md shadow-[#F2B92C]/20 hover:shadow-lg hover:shadow-[#F2B92C]/30 transition-all"
+              aria-label="Watch Demo"
             >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <span>Watch Demo</span>
             </a>
             <a
               href="https://github.com/TrustPipe/TinyPayContract-ETH"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#F2B92C]/25 via-[#F2B92C]/20 to-[#6B9EF5]/20 backdrop-blur-xl border border-[#F2B92C]/40 px-4 py-2 text-xs font-semibold text-slate-800 shadow-md shadow-[#F2B92C]/20 hover:shadow-lg hover:shadow-[#F2B92C]/30 transition-all"
+              className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-[#F2B92C]/25 via-[#F2B92C]/20 to-[#6B9EF5]/20 backdrop-blur-xl border border-[#F2B92C]/40 text-slate-800 shadow-md shadow-[#F2B92C]/20 hover:shadow-lg hover:shadow-[#F2B92C]/30 transition-all"
               aria-label="View Contract on GitHub"
             >
-              <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                 <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
               </svg>
-              <span className="hidden sm:inline">Contract</span>
             </a>
-            <div className="ml-1">
-              <WalletButton />
-            </div>
+            <WalletButton />
           </div>
         </div>
       </header>
 
-      <main className="relative z-10 mx-auto max-w-6xl px-6">
+      <main className="relative z-10 mx-auto max-w-7xl px-6">
         <section className={FIRST_SECTION_HEIGHT}>
           <div className="grid gap-16 lg:grid-cols-[1.2fr_0.8fr] lg:items-start mt-8">
             <div className="space-y-12">
@@ -151,10 +198,10 @@ export default function Home() {
                 World's first offline crypto payment
               </div>
               <h1 className="text-5xl font-semibold tracking-tight text-slate-900 md:text-7xl leading-relaxed md:leading-relaxed">
-                <span className="text-6xl md:text-8xl italic tracking-widest bg-gradient-to-r from-[#D3A86C] via-[#91C8CA] via-[#9FE0D1] to-[#D3A86C] bg-clip-text text-transparent">Pay</span> anywhere, even <span className="bg-gradient-to-r from-[#D3A86C] via-[#91C8CA] via-[#9FE0D1] to-[#D3A86C] bg-clip-text text-transparent">offline</span>, just<br /><span className="bg-gradient-to-r from-[#D3A86C] via-[#91C8CA] via-[#9FE0D1] to-[#D3A86C] bg-clip-text text-transparent">one</span> scan.
+                <span className="text-6xl md:text-8xl italic tracking-widest bg-gradient-to-r from-[#D3A86C] via-[#91C8CA] via-[#9FE0D1] to-[#D3A86C] bg-clip-text text-transparent">Pay</span> anywhere,<br />even <span className="bg-gradient-to-r from-[#D3A86C] via-[#91C8CA] via-[#9FE0D1] to-[#D3A86C] bg-clip-text text-transparent">offline</span>, just<br /><span className="bg-gradient-to-r from-[#D3A86C] via-[#91C8CA] via-[#9FE0D1] to-[#D3A86C] bg-clip-text text-transparent">one</span> scan.
               </h1>
-              <p className="max-w-2xl text-xl leading-relaxed text-slate-600">
-                TinyPay expands blockchain's usability from DeFi to daily life — enabling the first truly cash-like experience for digital value.
+              <p className="max-w-3xl text-xl leading-relaxed text-slate-700">
+                TinyPay expands blockchain's usability from DeFi to daily life<br />— enabling the first truly cash-like experience for digital value.
               </p>
             </div>
             <div className="flex items-start justify-center lg:sticky lg:top-24 lg:self-start">
@@ -293,14 +340,105 @@ export default function Home() {
                 TinyPay rebuilds the missing bridge between crypto and everyday payments — enabling anyone to pay instantly and securely, even offline.
               </p>
             </div>
-            <div className="grid gap-6 sm:grid-cols-2">
-              {journey.map(step => (
+            <div className="space-y-6">
+              {journey.map((step, index) => (
                 <div
                   key={step.title}
                   className="rounded-[32px] border border-[#9FE0D1]/20 bg-white/80 backdrop-blur-sm p-8 transition hover:-translate-y-1 hover:border-[#91C8CA]/50 hover:shadow-lg hover:shadow-[#91C8CA]/20"
                 >
-                  <h3 className="text-lg font-semibold text-slate-900">{step.title}</h3>
-                  <p className="mt-3 text-sm text-slate-600">{step.description}</p>
+                  <div className="flex items-start gap-6">
+                    <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-[#91C8CA] to-[#9FE0D1] flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-[#91C8CA]/30">
+                      {index + 1}
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-xl font-semibold text-slate-900 mb-2">{step.title}</h3>
+                      <p className="text-base text-slate-600 leading-relaxed">{step.description}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className={SECTION_HEIGHT}>
+          <div className="rounded-[48px] bg-gradient-to-br from-white/90 via-[#6B9EF5]/5 to-white/85 p-10 shadow-[0_40px_120px_-60px_rgba(107,158,245,0.3)]">
+            <div className="mb-12 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#6B9EF5]">Key Features</p>
+                <h2 className="mt-3 text-4xl font-semibold text-slate-900">Built for real-world use</h2>
+              </div>
+              <p className="max-w-lg text-base text-slate-600">
+                TinyPay combines security, convenience, and yield — making crypto payments practical and profitable.
+              </p>
+            </div>
+            <div className="grid gap-6 sm:grid-cols-3">
+              {keyFeatures.map(feature => (
+                <div
+                  key={feature.title}
+                  className="rounded-[32px] border border-[#6B9EF5]/20 bg-white/80 backdrop-blur-sm p-10 min-h-[320px] flex flex-col transition hover:-translate-y-1 hover:border-[#6B9EF5]/50 hover:shadow-lg hover:shadow-[#6B9EF5]/20"
+                >
+                  <div className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#6B9EF5]/20 to-[#6B9EF5]/10">
+                    {feature.icon === 'shield' && (
+                      <svg className="w-7 h-7 text-[#6B9EF5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                      </svg>
+                    )}
+                    {feature.icon === 'offline' && (
+                      <svg className="w-7 h-7 text-[#6B9EF5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
+                      </svg>
+                    )}
+                    {feature.icon === 'savings' && (
+                      <svg className="w-7 h-7 text-[#6B9EF5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    )}
+                  </div>
+                  <h3 className="text-xl font-semibold text-slate-900 mb-4">{feature.title}</h3>
+                  <p className="text-base text-slate-600 leading-relaxed">{feature.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className={SECTION_HEIGHT}>
+          <div className="rounded-[48px] bg-gradient-to-br from-white/90 via-[#D3A86C]/8 to-white/85 p-10 shadow-[0_40px_120px_-60px_rgba(211,168,108,0.35)]">
+            <div className="mb-12 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#D3A86C]">Business Model</p>
+                <h2 className="mt-3 text-4xl font-semibold text-slate-900">Sustainable revenue streams</h2>
+              </div>
+              <p className="max-w-lg text-base text-slate-600">
+                TinyPay creates value through DeFi yields, hardware solutions, and premium services for merchants.
+              </p>
+            </div>
+            <div className="grid gap-6 sm:grid-cols-3">
+              {businessModels.map(model => (
+                <div
+                  key={model.title}
+                  className="rounded-[32px] border border-[#D3A86C]/20 bg-white/80 backdrop-blur-sm p-10 min-h-[320px] flex flex-col transition hover:-translate-y-1 hover:border-[#D3A86C]/50 hover:shadow-lg hover:shadow-[#D3A86C]/20"
+                >
+                  <div className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#D3A86C]/20 to-[#D3A86C]/10">
+                    {model.icon === 'chart' && (
+                      <svg className="w-7 h-7 text-[#D3A86C]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+                      </svg>
+                    )}
+                    {model.icon === 'hardware' && (
+                      <svg className="w-7 h-7 text-[#D3A86C]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                      </svg>
+                    )}
+                    {model.icon === 'services' && (
+                      <svg className="w-7 h-7 text-[#D3A86C]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                      </svg>
+                    )}
+                  </div>
+                  <h3 className="text-xl font-semibold text-slate-900 mb-4">{model.title}</h3>
+                  <p className="text-base text-slate-600 leading-relaxed">{model.description}</p>
                 </div>
               ))}
             </div>
@@ -319,10 +457,10 @@ export default function Home() {
               </p>
             </div>
             <div className="mt-12">
-              <Image 
-                src="/images/arc.png" 
-                alt="TinyPay Architecture Diagram" 
-                width={1200} 
+              <Image
+                src="/images/arc.png"
+                alt="TinyPay Architecture Diagram"
+                width={1200}
                 height={800}
                 className="w-full h-auto rounded-[32px] shadow-lg shadow-[#91C8CA]/20"
               />

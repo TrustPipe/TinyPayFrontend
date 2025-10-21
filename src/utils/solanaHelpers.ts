@@ -2,7 +2,7 @@
  * Solana 合约交互辅助函数
  */
 
-import { Program, AnchorProvider, BN } from '@coral-xyz/anchor';
+import { Program, AnchorProvider, BN, Idl } from '@coral-xyz/anchor';
 import { PublicKey, SystemProgram } from '@solana/web3.js';
 import { PROGRAM_ID } from '@/config/solana';
 import idl from '../../tinypay_solana.json';
@@ -17,7 +17,7 @@ export async function depositSOL(
 ): Promise<string> {
   try {
     // 创建程序实例
-    const program = new Program(idl as any, provider);
+    const program = new Program(idl as Idl, provider);
     const user = provider.wallet.publicKey;
 
     // 计算 PDA 账户地址
@@ -83,16 +83,16 @@ export async function depositSOL(
     console.log('✅ Transaction signature:', tx);
     return tx;
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('❌ Deposit failed:', error);
 
     // 提供更友好的错误信息
-    if (error.message?.includes('already been processed')) {
+    if (error instanceof Error && error.message?.includes('already been processed')) {
       throw new Error('Transaction was rejected. This might be because:\n1. The user account needs to be initialized first\n2. Or the transaction was submitted multiple times\n\nPlease try again or contact support.');
     }
 
-    if (error.logs) {
-      console.error('Transaction logs:', error.logs);
+    if (typeof error === 'object' && error !== null && 'logs' in error) {
+      console.error('Transaction logs:', (error as { logs: unknown }).logs);
     }
 
     throw error;

@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import VantaBackground from "@/components/VantaBackground";
 import { WalletButton } from "@/components/WalletButton";
 import { DepositForm } from "@/components/DepositForm";
@@ -202,7 +202,7 @@ export default function Home() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F2B92C] opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#F2B92C]"></span>
                 </span>
-                World's first offline crypto payment
+                World&apos;s first offline crypto payment
               </motion.div>
               <motion.h1
                 initial={{ opacity: 0, y: 30 }}
@@ -218,7 +218,7 @@ export default function Home() {
                 transition={{ duration: 0.8, delay: 0.6 }}
                 className="max-w-3xl text-xl leading-relaxed text-slate-700"
               >
-                TinyPay expands blockchain's usability from DeFi to daily life<br />— enabling the first truly cash-like experience for digital value.
+                TinyPay expands blockchain&apos;s usability from DeFi to daily life<br />— enabling the first truly cash-like experience for digital value.
               </motion.p>
             </div>
             <motion.div
@@ -299,7 +299,7 @@ export default function Home() {
                           </div>
                           <div>
                             <p className="text-sm font-semibold text-slate-800 mb-1">Deposit Funds</p>
-                            <p className="text-xs text-slate-600">Deposit SOL into TinyPay's smart contract</p>
+                            <p className="text-xs text-slate-600">Deposit SOL into TinyPay&apos;s smart contract</p>
                           </div>
                         </div>
                         <div className="flex gap-3">

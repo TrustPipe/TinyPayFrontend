@@ -4,9 +4,11 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { motion, useScroll, useTransform } from "framer-motion";
 import VantaBackground from "@/components/VantaBackground";
 import { WalletButton } from "@/components/WalletButton";
 import { DepositForm } from "@/components/DepositForm";
+import { ScrollReveal } from "@/components/ScrollReveal";
 
 const journey = [
   {
@@ -190,21 +192,41 @@ export default function Home() {
         <section className={FIRST_SECTION_HEIGHT}>
           <div className="grid gap-16 lg:grid-cols-[1.2fr_0.8fr] lg:items-start mt-8">
             <div className="space-y-12">
-              <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#F2B92C]/25 via-[#F2B92C]/20 to-[#6B9EF5]/20 backdrop-blur-xl border border-[#F2B92C]/50 px-5 py-2.5 text-sm font-semibold text-slate-800 shadow-lg shadow-[#F2B92C]/25 hover:shadow-xl hover:shadow-[#F2B92C]/35 transition-all">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#F2B92C]/25 via-[#F2B92C]/20 to-[#6B9EF5]/20 backdrop-blur-xl border border-[#F2B92C]/50 px-5 py-2.5 text-sm font-semibold text-slate-800 shadow-lg shadow-[#F2B92C]/25 hover:shadow-xl hover:shadow-[#F2B92C]/35 transition-all"
+              >
                 <span className="relative flex h-2.5 w-2.5">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F2B92C] opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#F2B92C]"></span>
                 </span>
                 World's first offline crypto payment
-              </div>
-              <h1 className="text-5xl font-semibold tracking-tight text-slate-900 md:text-7xl leading-relaxed md:leading-relaxed">
+              </motion.div>
+              <motion.h1
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+                className="text-5xl font-semibold tracking-tight text-slate-900 md:text-7xl leading-relaxed md:leading-relaxed"
+              >
                 <span className="text-6xl md:text-8xl italic tracking-widest bg-gradient-to-r from-[#D3A86C] via-[#91C8CA] via-[#9FE0D1] to-[#D3A86C] bg-clip-text text-transparent">Pay</span> anywhere,<br />even <span className="bg-gradient-to-r from-[#D3A86C] via-[#91C8CA] via-[#9FE0D1] to-[#D3A86C] bg-clip-text text-transparent">offline</span>, just<br /><span className="bg-gradient-to-r from-[#D3A86C] via-[#91C8CA] via-[#9FE0D1] to-[#D3A86C] bg-clip-text text-transparent">one</span> scan.
-              </h1>
-              <p className="max-w-3xl text-xl leading-relaxed text-slate-700">
+              </motion.h1>
+              <motion.p
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.6 }}
+                className="max-w-3xl text-xl leading-relaxed text-slate-700"
+              >
                 TinyPay expands blockchain's usability from DeFi to daily life<br />— enabling the first truly cash-like experience for digital value.
-              </p>
+              </motion.p>
             </div>
-            <div className="flex items-start justify-center lg:sticky lg:top-24 lg:self-start">
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.8 }}
+              className="flex items-start justify-center lg:sticky lg:top-24 lg:self-start"
+            >
               <div className="relative w-full max-w-lg space-y-6 max-h-[calc(100vh-12rem)] overflow-y-auto overscroll-contain scrollbar-thin scrollbar-thumb-[#91C8CA]/30 scrollbar-track-transparent">
                 {/* Card 1: Wallet Info */}
                 <div className="rounded-[32px] border border-[#F2B92C]/30 bg-gradient-to-br from-[#F2B92C]/60 to-[#E8A91C]/70 backdrop-blur-xl p-6 text-white shadow-lg shadow-[#F2B92C]/40">
@@ -325,59 +347,59 @@ export default function Home() {
                   </>
                 )}
               </div>
-            </div>
+            </motion.div>
           </div>
         </section>
 
         <section className={SECTION_HEIGHT}>
-          <div className="rounded-[48px] bg-gradient-to-br from-white/90 via-[#9FE0D1]/8 to-white/80 p-10 shadow-[0_40px_120px_-60px_rgba(145,200,202,0.4)]">
-            <div className="mb-12 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-              <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#91C8CA]">User Journey</p>
-                <h2 className="mt-3 text-4xl font-semibold text-slate-900">We bring crypto back to the street.</h2>
-              </div>
-              <p className="max-w-lg text-base text-slate-600">
-                TinyPay rebuilds the missing bridge between crypto and everyday payments — enabling anyone to pay instantly and securely, even offline.
-              </p>
-            </div>
-            <div className="space-y-6">
-              {journey.map((step, index) => (
-                <div
-                  key={step.title}
-                  className="rounded-[32px] border border-[#9FE0D1]/20 bg-white/80 backdrop-blur-sm p-8 transition hover:-translate-y-1 hover:border-[#91C8CA]/50 hover:shadow-lg hover:shadow-[#91C8CA]/20"
-                >
-                  <div className="flex items-start gap-6">
-                    <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-[#91C8CA] to-[#9FE0D1] flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-[#91C8CA]/30">
-                      {index + 1}
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-xl font-semibold text-slate-900 mb-2">{step.title}</h3>
-                      <p className="text-base text-slate-600 leading-relaxed">{step.description}</p>
-                    </div>
-                  </div>
+          <ScrollReveal>
+            <div className="rounded-[48px] bg-gradient-to-br from-white/90 via-[#9FE0D1]/8 to-white/80 p-10 shadow-[0_40px_120px_-60px_rgba(145,200,202,0.4)]">
+              <div className="mb-12 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                <div>
+                  <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#91C8CA]">User Journey</p>
+                  <h2 className="mt-3 text-4xl font-semibold text-slate-900">We bring crypto back to the street.</h2>
                 </div>
-              ))}
+                <p className="max-w-lg text-base text-slate-600">
+                  TinyPay rebuilds the missing bridge between crypto and everyday payments — enabling anyone to pay instantly and securely, even offline.
+                </p>
+              </div>
+              <div className="space-y-6">
+                {journey.map((step, index) => (
+                  <ScrollReveal key={step.title} delay={index * 0.1}>
+                    <div className="rounded-[32px] border border-[#9FE0D1]/20 bg-white/80 backdrop-blur-sm p-8 transition hover:-translate-y-1 hover:border-[#91C8CA]/50 hover:shadow-lg hover:shadow-[#91C8CA]/20">
+                      <div className="flex items-start gap-6">
+                        <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-[#91C8CA] to-[#9FE0D1] flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-[#91C8CA]/30">
+                          {index + 1}
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-xl font-semibold text-slate-900 mb-2">{step.title}</h3>
+                          <p className="text-base text-slate-600 leading-relaxed">{step.description}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </ScrollReveal>
+                ))}
+              </div>
             </div>
-          </div>
+          </ScrollReveal>
         </section>
 
         <section className={SECTION_HEIGHT}>
-          <div className="rounded-[48px] bg-gradient-to-br from-white/90 via-[#6B9EF5]/5 to-white/85 p-10 shadow-[0_40px_120px_-60px_rgba(107,158,245,0.3)]">
-            <div className="mb-12 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-              <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#6B9EF5]">Key Features</p>
-                <h2 className="mt-3 text-4xl font-semibold text-slate-900">Built for real-world use</h2>
+          <ScrollReveal>
+            <div className="rounded-[48px] bg-gradient-to-br from-white/90 via-[#6B9EF5]/5 to-white/85 p-10 shadow-[0_40px_120px_-60px_rgba(107,158,245,0.3)]">
+              <div className="mb-12 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                <div>
+                  <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#6B9EF5]">Key Features</p>
+                  <h2 className="mt-3 text-4xl font-semibold text-slate-900">Built for real-world use</h2>
+                </div>
+                <p className="max-w-lg text-base text-slate-600">
+                  TinyPay combines security, convenience, and yield — making crypto payments practical and profitable.
+                </p>
               </div>
-              <p className="max-w-lg text-base text-slate-600">
-                TinyPay combines security, convenience, and yield — making crypto payments practical and profitable.
-              </p>
-            </div>
-            <div className="grid gap-6 sm:grid-cols-3">
-              {keyFeatures.map(feature => (
-                <div
-                  key={feature.title}
-                  className="rounded-[32px] border border-[#6B9EF5]/20 bg-white/80 backdrop-blur-sm p-10 min-h-[320px] flex flex-col transition hover:-translate-y-1 hover:border-[#6B9EF5]/50 hover:shadow-lg hover:shadow-[#6B9EF5]/20"
-                >
+              <div className="grid gap-6 sm:grid-cols-3">
+                {keyFeatures.map((feature, index) => (
+                  <ScrollReveal key={feature.title} delay={index * 0.1}>
+                    <div className="rounded-[32px] border border-[#6B9EF5]/20 bg-white/80 backdrop-blur-sm p-10 min-h-[320px] flex flex-col transition hover:-translate-y-1 hover:border-[#6B9EF5]/50 hover:shadow-lg hover:shadow-[#6B9EF5]/20">
                   <div className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#6B9EF5]/20 to-[#6B9EF5]/10">
                     {feature.icon === 'shield' && (
                       <svg className="w-7 h-7 text-[#6B9EF5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -395,31 +417,32 @@ export default function Home() {
                       </svg>
                     )}
                   </div>
-                  <h3 className="text-xl font-semibold text-slate-900 mb-4">{feature.title}</h3>
-                  <p className="text-base text-slate-600 leading-relaxed">{feature.description}</p>
-                </div>
-              ))}
+                      <h3 className="text-xl font-semibold text-slate-900 mb-4">{feature.title}</h3>
+                      <p className="text-base text-slate-600 leading-relaxed">{feature.description}</p>
+                    </div>
+                  </ScrollReveal>
+                ))}
+              </div>
             </div>
-          </div>
+          </ScrollReveal>
         </section>
 
         <section className={SECTION_HEIGHT}>
-          <div className="rounded-[48px] bg-gradient-to-br from-white/90 via-[#D3A86C]/8 to-white/85 p-10 shadow-[0_40px_120px_-60px_rgba(211,168,108,0.35)]">
-            <div className="mb-12 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-              <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#D3A86C]">Business Model</p>
-                <h2 className="mt-3 text-4xl font-semibold text-slate-900">Sustainable revenue streams</h2>
+          <ScrollReveal>
+            <div className="rounded-[48px] bg-gradient-to-br from-white/90 via-[#D3A86C]/8 to-white/85 p-10 shadow-[0_40px_120px_-60px_rgba(211,168,108,0.35)]">
+              <div className="mb-12 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                <div>
+                  <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#D3A86C]">Business Model</p>
+                  <h2 className="mt-3 text-4xl font-semibold text-slate-900">Sustainable revenue streams</h2>
+                </div>
+                <p className="max-w-lg text-base text-slate-600">
+                  TinyPay creates value through DeFi yields, hardware solutions, and premium services for merchants.
+                </p>
               </div>
-              <p className="max-w-lg text-base text-slate-600">
-                TinyPay creates value through DeFi yields, hardware solutions, and premium services for merchants.
-              </p>
-            </div>
-            <div className="grid gap-6 sm:grid-cols-3">
-              {businessModels.map(model => (
-                <div
-                  key={model.title}
-                  className="rounded-[32px] border border-[#D3A86C]/20 bg-white/80 backdrop-blur-sm p-10 min-h-[320px] flex flex-col transition hover:-translate-y-1 hover:border-[#D3A86C]/50 hover:shadow-lg hover:shadow-[#D3A86C]/20"
-                >
+              <div className="grid gap-6 sm:grid-cols-3">
+                {businessModels.map((model, index) => (
+                  <ScrollReveal key={model.title} delay={index * 0.1}>
+                    <div className="rounded-[32px] border border-[#D3A86C]/20 bg-white/80 backdrop-blur-sm p-10 min-h-[320px] flex flex-col transition hover:-translate-y-1 hover:border-[#D3A86C]/50 hover:shadow-lg hover:shadow-[#D3A86C]/20">
                   <div className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#D3A86C]/20 to-[#D3A86C]/10">
                     {model.icon === 'chart' && (
                       <svg className="w-7 h-7 text-[#D3A86C]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -437,16 +460,19 @@ export default function Home() {
                       </svg>
                     )}
                   </div>
-                  <h3 className="text-xl font-semibold text-slate-900 mb-4">{model.title}</h3>
-                  <p className="text-base text-slate-600 leading-relaxed">{model.description}</p>
-                </div>
-              ))}
+                      <h3 className="text-xl font-semibold text-slate-900 mb-4">{model.title}</h3>
+                      <p className="text-base text-slate-600 leading-relaxed">{model.description}</p>
+                    </div>
+                  </ScrollReveal>
+                ))}
+              </div>
             </div>
-          </div>
+          </ScrollReveal>
         </section>
 
         <section className={SECTION_HEIGHT}>
-          <div className="rounded-[48px] bg-gradient-to-r from-[#91C8CA]/12 via-white/95 to-[#D3A86C]/12 p-10 shadow-[0_40px_120px_-60px_rgba(145,200,202,0.35)]">
+          <ScrollReveal>
+            <div className="rounded-[48px] bg-gradient-to-r from-[#91C8CA]/12 via-white/95 to-[#D3A86C]/12 p-10 shadow-[0_40px_120px_-60px_rgba(145,200,202,0.35)]">
             <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
               <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#91C8CA]">Technical Architecture</p>
@@ -456,47 +482,50 @@ export default function Home() {
                 A simple four-layer stack keeps offline payments trustworthy while ensuring merchants get paid fast the moment a connection comes back.
               </p>
             </div>
-            <div className="mt-12">
-              <Image
-                src="/images/arc.png"
-                alt="TinyPay Architecture Diagram"
-                width={1200}
-                height={800}
-                className="w-full h-auto rounded-[32px] shadow-lg shadow-[#91C8CA]/20"
-              />
+              <div className="mt-12">
+                <Image
+                  src="/images/arc.png"
+                  alt="TinyPay Architecture Diagram"
+                  width={1200}
+                  height={800}
+                  className="w-full h-auto rounded-[32px] shadow-lg shadow-[#91C8CA]/20"
+                />
+              </div>
             </div>
-          </div>
+          </ScrollReveal>
         </section>
 
         <section className={SECTION_HEIGHT}>
-          <div className="rounded-[48px] bg-gradient-to-br from-white/90 via-[#9FE0D1]/5 to-white/85 p-10 shadow-[0_40px_120px_-60px_rgba(159,224,209,0.3)]">
-            <div className="mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-              <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#91C8CA]">FAQ</p>
-                <h2 className="mt-3 text-4xl font-semibold text-slate-900">Answers before you ask</h2>
+          <ScrollReveal>
+            <div className="rounded-[48px] bg-gradient-to-br from-white/90 via-[#9FE0D1]/5 to-white/85 p-10 shadow-[0_40px_120px_-60px_rgba(159,224,209,0.3)]">
+              <div className="mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                <div>
+                  <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#91C8CA]">FAQ</p>
+                  <h2 className="mt-3 text-4xl font-semibold text-slate-900">Answers before you ask</h2>
+                </div>
+                <p className="max-w-xl text-base text-slate-600">
+                  Reach out if you need deeper technical docs or want to explore pilots. We are quick on replies.
+                </p>
               </div>
-              <p className="max-w-xl text-base text-slate-600">
-                Reach out if you need deeper technical docs or want to explore pilots. We are quick on replies.
-              </p>
-            </div>
-            <div className="space-y-4">
-              {faqs.map(item => (
-                <details
-                  key={item.question}
-                  className="group rounded-[32px] border border-[#9FE0D1]/25 bg-white/80 backdrop-blur-sm p-6 transition hover:border-[#91C8CA]/50 hover:shadow-lg hover:shadow-[#91C8CA]/15"
-                >
+              <div className="space-y-4">
+                {faqs.map((item, index) => (
+                  <ScrollReveal key={item.question} delay={index * 0.1}>
+                    <details className="group rounded-[32px] border border-[#9FE0D1]/25 bg-white/80 backdrop-blur-sm p-6 transition hover:border-[#91C8CA]/50 hover:shadow-lg hover:shadow-[#91C8CA]/15">
                   <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-lg font-semibold text-slate-900">
                     {item.question}
                     <span className="text-sm font-normal text-[#91C8CA] transition group-open:rotate-45">+</span>
                   </summary>
-                  <p className="mt-4 text-sm text-slate-600">{item.answer}</p>
-                </details>
-              ))}
+                      <p className="mt-4 text-sm text-slate-600">{item.answer}</p>
+                    </details>
+                  </ScrollReveal>
+                ))}
+              </div>
             </div>
-          </div>
+          </ScrollReveal>
         </section>
 
         <section className={`relative ${LAST_SECTION_HEIGHT}`}>
+          <ScrollReveal>
           <div className="absolute left-1/2 -translate-x-1/2 w-screen top-0 bottom-0 -z-10 bg-gradient-to-br from-[#91C8CA]/25 via-[#9FE0D1]/15 to-[#D3A86C]/25 blur-3xl" />
           <div className="rounded-[48px] bg-gradient-to-br from-[#D3A86C] via-[#91C8CA] to-[#9FE0D1] p-[1px] shadow-[0_40px_120px_-60px_rgba(145,200,202,0.5)]">
             <div className="rounded-[46px] bg-white/95 p-16 text-center">
@@ -549,6 +578,7 @@ export default function Home() {
               </div>
             </div>
           </div>
+          </ScrollReveal>
         </section>
       </main>
 

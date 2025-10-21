@@ -12,22 +12,22 @@ const journey = [
   {
     title: "Discover TinyPay",
     description:
-      "Try the offline-first crypto payment experience built for real-world merchants.",
+      "Experience how crypto can finally be used like real money — instant, portable, and made for real-world payments.",
   },
   {
-    title: "Download & Activate",
+    title: "Get Ready to Pay",
     description:
-      "Install the TinyPay payer and merchant apps, then fund your wallet in minutes.",
+      "Install the TinyPay app and generate secure One-Time Payment codes (OTPs). Your balance is stored safely on-chain.",
   },
   {
-    title: "Pay with One-Time Codes",
+    title: "Pay Instantly, Even Offline",
     description:
-      "Generate secure OTPs without connectivity and share them with the merchant instantly.",
+      "Show your TinyPay code to the merchant. The merchant verifies it locally — no network, no signature, just tap and go.",
   },
   {
     title: "Settle Trustlessly",
     description:
-      "Transactions reconcile automatically on U2U Network as soon as either party is back online.",
+      "Once the merchant comes back online, transactions are automatically verified and settled on Solana. Every payment is final, secure, and interoperable by design.",
   },
 ];
 
@@ -187,13 +187,13 @@ export default function Home() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F2B92C] opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#F2B92C]"></span>
                 </span>
-                Offline-first crypto payments
+                World's first offline crypto payment
               </div>
               <h1 className="text-5xl font-semibold tracking-tight text-slate-900 md:text-7xl leading-relaxed md:leading-relaxed">
-                <span className="text-6xl md:text-8xl italic tracking-widest bg-gradient-to-r from-[#D3A86C] via-[#91C8CA] via-[#9FE0D1] to-[#D3A86C] bg-clip-text text-transparent">Pay</span> anywhere. Settle on Solana when <span className="bg-gradient-to-r from-[#D3A86C] via-[#91C8CA] via-[#9FE0D1] to-[#D3A86C] bg-clip-text text-transparent">back online</span>.
+                <span className="text-6xl md:text-8xl italic tracking-widest bg-gradient-to-r from-[#D3A86C] via-[#91C8CA] via-[#9FE0D1] to-[#D3A86C] bg-clip-text text-transparent">Pay</span> anywhere, even <span className="bg-gradient-to-r from-[#D3A86C] via-[#91C8CA] via-[#9FE0D1] to-[#D3A86C] bg-clip-text text-transparent">offline</span>, just<br /><span className="bg-gradient-to-r from-[#D3A86C] via-[#91C8CA] via-[#9FE0D1] to-[#D3A86C] bg-clip-text text-transparent">one</span> scan.
               </h1>
-              <p className="max-w-2xl text-lg leading-relaxed text-slate-600">
-                TinyPay blends on-chain security with a cash-like offline experience. Generate single-use payment codes that merchants trust instantly—and the blockchain settles the rest.
+              <p className="max-w-2xl text-xl leading-relaxed text-slate-600">
+                TinyPay expands blockchain's usability from DeFi to daily life — enabling the first truly cash-like experience for digital value.
               </p>
             </div>
             <div className="flex items-start justify-center lg:sticky lg:top-24 lg:self-start">
@@ -269,7 +269,7 @@ export default function Home() {
                           </div>
                           <div>
                             <p className="text-sm font-semibold text-slate-800 mb-1">Deposit Funds</p>
-                            <p className="text-xs text-slate-600">Add SOL to your TinyPay account</p>
+                            <p className="text-xs text-slate-600">Deposit SOL into TinyPay's smart contract</p>
                           </div>
                         </div>
                         <div className="flex gap-3">
@@ -279,45 +279,6 @@ export default function Home() {
                           <div>
                             <p className="text-sm font-semibold text-slate-800 mb-1">Pay Offline</p>
                             <p className="text-xs text-slate-600">Generate secure OTPs and make payments without internet</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Features Card */}
-                    <div className="rounded-[28px] border border-[#D3A86C]/25 bg-gradient-to-br from-[#D3A86C]/8 via-white/95 to-[#9FE0D1]/8 backdrop-blur-xl p-6 shadow-xl shadow-[#D3A86C]/15">
-                      <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
-                        <svg className="w-5 h-5 text-[#D3A86C]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                        </svg>
-                        Why TinyPay?
-                      </h3>
-                      <div className="space-y-3">
-                        <div className="flex items-start gap-3">
-                          <svg className="w-5 h-5 text-[#91C8CA] flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                          <div>
-                            <p className="text-sm font-semibold text-slate-800">Offline Payments</p>
-                            <p className="text-xs text-slate-600">Make secure payments without internet connection</p>
-                          </div>
-                        </div>
-                        <div className="flex items-start gap-3">
-                          <svg className="w-5 h-5 text-[#91C8CA] flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                          </svg>
-                          <div>
-                            <p className="text-sm font-semibold text-slate-800">Hash Chain Security</p>
-                            <p className="text-xs text-slate-600">1000-iteration SHA256 prevents replay attacks</p>
-                          </div>
-                        </div>
-                        <div className="flex items-start gap-3">
-                          <svg className="w-5 h-5 text-[#91C8CA] flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                          </svg>
-                          <div>
-                            <p className="text-sm font-semibold text-slate-800">Multi-Token Support</p>
-                            <p className="text-xs text-slate-600">Pay with SOL (SPL tokens coming soon)</p>
                           </div>
                         </div>
                       </div>
@@ -365,10 +326,10 @@ export default function Home() {
             <div className="mb-12 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
               <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#91C8CA]">User Journey</p>
-                <h2 className="mt-3 text-4xl font-semibold text-slate-900">A cash-like flow for digital value</h2>
+                <h2 className="mt-3 text-4xl font-semibold text-slate-900">We bring crypto back to the street.</h2>
               </div>
               <p className="max-w-lg text-base text-slate-600">
-                TinyPay removes the friction between blockchain rails and real-world payments. Here is what it feels like from onboarding to settlement.
+                TinyPay rebuilds the missing bridge between crypto and everyday payments — enabling anyone to pay instantly and securely, even offline.
               </p>
             </div>
             <div className="grid gap-6 sm:grid-cols-2">

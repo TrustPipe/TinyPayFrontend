@@ -253,9 +253,12 @@ export default function Home() {
               href="https://tinyurl.com/tinypay-demo"
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-full border-2 border-[#91C8CA] px-5 py-2 text-sm font-semibold text-[#91C8CA] transition hover:bg-gradient-to-r hover:from-[#91C8CA] hover:via-[#9FE0D1] hover:to-[#D3A86C] hover:text-white hover:border-transparent hover:shadow-lg hover:shadow-[#91C8CA]/40"
+              className="rounded-full border-2 border-[#91C8CA] p-2 text-[#91C8CA] transition hover:bg-gradient-to-br hover:from-[#91C8CA]/10 hover:to-[#9FE0D1]/10"
+              aria-label="Watch the Demo"
             >
-              Watch the Demo
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M8 5v14l11-7z" />
+              </svg>
             </a>
             <a
               href="https://testflight.apple.com/join"
@@ -296,52 +299,52 @@ export default function Home() {
 
       <main className="relative z-10 mx-auto max-w-6xl px-6">
         <section className={SECTION_HEIGHT}>
-          <div className="grid gap-16 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
-            <div className="space-y-12">
-              <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#F2B92C]/25 via-[#F2B92C]/20 to-[#6B9EF5]/20 backdrop-blur-xl border border-[#F2B92C]/50 px-5 py-2.5 text-sm font-semibold text-slate-800 shadow-lg shadow-[#F2B92C]/25 hover:shadow-xl hover:shadow-[#F2B92C]/35 transition-all">
-                <span className="relative flex h-2.5 w-2.5">
+          <div className="grid gap-6 md:gap-12 lg:gap-16 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
+            <div className="space-y-4 md:space-y-12">
+              <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#F2B92C]/25 via-[#F2B92C]/20 to-[#6B9EF5]/20 backdrop-blur-xl border border-[#F2B92C]/50 px-3 py-1.5 md:px-5 md:py-2.5 text-xs md:text-sm font-semibold text-slate-800 shadow-lg shadow-[#F2B92C]/25 hover:shadow-xl hover:shadow-[#F2B92C]/35 transition-all">
+                <span className="relative flex h-2 w-2 md:h-2.5 md:w-2.5">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F2B92C] opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#F2B92C]"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 md:h-2.5 md:w-2.5 bg-[#F2B92C]"></span>
                 </span>
                 Offline-first crypto payments
               </div>
-              <h1 className="text-5xl font-semibold tracking-tight text-slate-900 md:text-7xl leading-relaxed md:leading-relaxed">
-                <span className="text-6xl md:text-8xl italic tracking-widest bg-gradient-to-r from-[#D3A86C] via-[#91C8CA] via-[#9FE0D1] to-[#D3A86C] bg-clip-text text-transparent">Pay</span> anywhere. Settle on Aptos when <span className="bg-gradient-to-r from-[#D3A86C] via-[#91C8CA] via-[#9FE0D1] to-[#D3A86C] bg-clip-text text-transparent">back online</span>.
+              <h1 className="text-2xl font-semibold tracking-tight text-slate-900 md:text-7xl leading-tight md:leading-relaxed">
+                <span className="text-3xl md:text-8xl italic tracking-widest bg-gradient-to-r from-[#D3A86C] via-[#91C8CA] via-[#9FE0D1] to-[#D3A86C] bg-clip-text text-transparent">Pay</span> anywhere. Settle on Aptos when <span className="bg-gradient-to-r from-[#D3A86C] via-[#91C8CA] via-[#9FE0D1] to-[#D3A86C] bg-clip-text text-transparent">back online</span>.
               </h1>
-              <p className="max-w-2xl text-lg leading-relaxed text-slate-600">
+              <p className="max-w-2xl text-sm md:text-lg leading-relaxed text-slate-600">
                 TinyPay blends on-chain security with a cash-like offline experience. Generate single-use payment codes that merchants trust instantly—and the blockchain settles the rest.
               </p>
             </div>
             <div className="flex items-center justify-center">
-              <div className="relative w-full max-w-lg space-y-6">
+              <div className="relative w-full max-w-lg space-y-3 md:space-y-6">
                 {/* Card 1: Wallet Info */}
-                <div className="rounded-[32px] border border-[#F2B92C]/30 bg-gradient-to-br from-[#F2B92C]/60 to-[#E8A91C]/70 backdrop-blur-xl p-6 text-white shadow-lg shadow-[#F2B92C]/40">
+                <div className="rounded-[24px] md:rounded-[32px] border border-[#F2B92C]/30 bg-gradient-to-br from-[#F2B92C]/60 to-[#E8A91C]/70 backdrop-blur-xl p-4 md:p-6 text-white shadow-lg shadow-[#F2B92C]/40">
                   {connected && account ? (
                     <>
-                      <div className="flex items-center justify-between mb-4">
-                        <span className="text-lg font-semibold">Quick Deposit</span>
-                        <div className="flex items-center gap-2">
-                          <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-medium">
+                      <div className="flex items-center justify-between mb-2 md:mb-4">
+                        <span className="text-base md:text-lg font-semibold">Quick Deposit</span>
+                        <div className="flex items-center gap-1 md:gap-2">
+                          <span className="rounded-full bg-white/20 px-2 py-0.5 md:px-3 md:py-1 text-[10px] md:text-xs font-medium">
                             {network?.name || "Unknown"}
                           </span>
                           <button
                             onClick={disconnect}
-                            className="rounded-full bg-white/20 hover:bg-white/30 px-3 py-1 text-xs font-medium transition"
+                            className="rounded-full bg-white/20 hover:bg-white/30 px-2 py-0.5 md:px-3 md:py-1 text-[10px] md:text-xs font-medium transition"
                           >
                             Disconnect
                           </button>
                         </div>
                       </div>
-                      <div className="space-y-2">
+                      <div className="space-y-1 md:space-y-2">
                         <div>
-                          <p className="text-xs opacity-75">Balance</p>
-                          <p className="text-3xl font-bold">
-                            {loadingBalance ? "..." : balance} <span className="text-xl">APT</span>
+                          <p className="text-[10px] md:text-xs opacity-75">Balance</p>
+                          <p className="text-2xl md:text-3xl font-bold">
+                            {loadingBalance ? "..." : balance} <span className="text-base md:text-xl">APT</span>
                           </p>
                         </div>
                         <div>
-                          <p className="text-xs opacity-75">Address</p>
-                          <p className="text-sm font-mono opacity-90">
+                          <p className="text-[10px] md:text-xs opacity-75">Address</p>
+                          <p className="text-xs md:text-sm font-mono opacity-90">
                             {String(account.address).slice(0, 8)}...{String(account.address).slice(-6)}
                           </p>
                         </div>
@@ -349,12 +352,12 @@ export default function Home() {
                     </>
                   ) : (
                     <>
-                      <div className="text-center py-4">
-                        <p className="text-xl font-semibold mb-3">Connect Wallet</p>
-                        <p className="text-sm opacity-80 mb-4">Connect your Aptos wallet to start using TinyPay</p>
+                      <div className="text-center py-2 md:py-4">
+                        <p className="text-lg md:text-xl font-semibold mb-2 md:mb-3">Connect Wallet</p>
+                        <p className="text-xs md:text-sm opacity-80 mb-3 md:mb-4">Connect your Aptos wallet to start using TinyPay</p>
                         <button
                           onClick={handleConnect}
-                          className="rounded-full bg-white/25 hover:bg-white/35 backdrop-blur-sm px-6 py-2 text-sm font-semibold transition"
+                          className="rounded-full bg-white/25 hover:bg-white/35 backdrop-blur-sm px-5 py-1.5 md:px-6 md:py-2 text-xs md:text-sm font-semibold transition"
                         >
                           Connect Now
                         </button>
@@ -364,10 +367,10 @@ export default function Home() {
                 </div>
 
                 {/* Card 2: Deposit Form */}
-                <div className="rounded-[28px] border border-[#91C8CA]/30 bg-gradient-to-br from-[#9FE0D1]/12 via-white/95 to-[#D3A86C]/8 backdrop-blur-xl p-6 shadow-xl shadow-[#91C8CA]/20">
-                  <div className="flex gap-4">
+                <div className="rounded-[20px] md:rounded-[28px] border border-[#91C8CA]/30 bg-gradient-to-br from-[#9FE0D1]/12 via-white/95 to-[#D3A86C]/8 backdrop-blur-xl p-4 md:p-6 shadow-xl shadow-[#91C8CA]/20">
+                  <div className="flex gap-2 md:gap-4">
                     {/* Left: Input Fields */}
-                    <div className="flex-1 space-y-3">
+                    <div className="flex-1 space-y-2 md:space-y-3">
                       {/* Amount Input with Asset Selector */}
                       <div>
                         <label className="block text-xs font-medium text-slate-700 mb-1.5">
@@ -418,7 +421,7 @@ export default function Home() {
                       <button
                         onClick={handleDeposit}
                         disabled={depositLoading || !connected}
-                        className={`px-5 py-4 rounded-xl font-semibold text-sm transition whitespace-nowrap flex flex-col items-center justify-center gap-1 min-w-[100px] ${
+                        className={`px-3 md:px-5 py-2 md:py-4 rounded-xl font-semibold text-xs md:text-sm transition whitespace-nowrap flex flex-col items-center justify-center gap-0.5 md:gap-1 min-w-[80px] md:min-w-[100px] ${
                           depositLoading || !connected
                             ? "bg-slate-300 text-slate-500 cursor-not-allowed"
                             : "bg-gradient-to-br from-[#91C8CA] via-[#9FE0D1] to-[#D3A86C] text-white hover:shadow-xl hover:shadow-[#91C8CA]/40 hover:-translate-y-0.5 shadow-lg shadow-[#91C8CA]/30"
@@ -426,18 +429,18 @@ export default function Home() {
                       >
                         {depositLoading ? (
                           <>
-                            <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <svg className="w-4 h-4 md:w-5 md:h-5 animate-spin" fill="none" viewBox="0 0 24 24">
                               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
-                            <span className="text-xs">Processing</span>
+                            <span className="text-[10px] md:text-xs">Processing</span>
                           </>
                         ) : (
                           <>
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                             </svg>
-                            <span className="font-bold">Deposit</span>
+                            <span className="font-bold text-[11px] md:text-sm">Deposit</span>
                           </>
                         )}
                       </button>
@@ -446,22 +449,22 @@ export default function Home() {
                 </div>
 
                 {/* Card 3: Status/Info */}
-                <div className="rounded-[28px] border border-[#D3A86C]/25 bg-gradient-to-br from-white/90 via-[#9FE0D1]/8 to-white/85 backdrop-blur-xl p-6 shadow-xl shadow-[#D3A86C]/15">
+                <div className="rounded-[20px] md:rounded-[28px] border border-[#D3A86C]/25 bg-gradient-to-br from-white/90 via-[#9FE0D1]/8 to-white/85 backdrop-blur-xl p-4 md:p-6 shadow-xl shadow-[#D3A86C]/15">
                   {depositStatus ? (
-                    <div className="space-y-3">
+                    <div className="space-y-2 md:space-y-3">
                       <div className="flex items-center gap-2">
-                        <div className={`h-2 w-2 rounded-full ${
-                          depositStatus.includes("successful") 
-                            ? "bg-green-500" 
+                        <div className={`h-1.5 w-1.5 md:h-2 md:w-2 rounded-full ${
+                          depositStatus.includes("successful")
+                            ? "bg-green-500"
                             : depositStatus.includes("Failed") || depositStatus.includes("failed")
                             ? "bg-red-500"
                             : "bg-[#91C8CA] animate-pulse"
                         }`} />
-                        <h3 className="text-sm font-semibold text-slate-900">Transaction Status</h3>
+                        <h3 className="text-xs md:text-sm font-semibold text-slate-900">Transaction Status</h3>
                       </div>
-                      <p className={`text-sm font-medium ${
-                        depositStatus.includes("successful") 
-                          ? "text-green-600" 
+                      <p className={`text-xs md:text-sm font-medium ${
+                        depositStatus.includes("successful")
+                          ? "text-green-600"
                           : depositStatus.includes("Failed") || depositStatus.includes("failed")
                           ? "text-red-600"
                           : "text-[#91C8CA]"
@@ -471,23 +474,23 @@ export default function Home() {
                       {depositStatus.includes("successful") && (
                         <Link
                           href="/deposit"
-                          className="inline-flex items-center gap-1 text-xs font-medium text-[#91C8CA] hover:text-[#9FE0D1] transition mt-2"
+                          className="inline-flex items-center gap-1 text-[10px] md:text-xs font-medium text-[#91C8CA] hover:text-[#9FE0D1] transition mt-1 md:mt-2"
                         >
                           View full details →
                         </Link>
                       )}
                   </div>
                   ) : (
-                    <div className="space-y-3">
-                      <h3 className="text-sm font-semibold text-slate-900">Getting Started</h3>
-                      <p className="text-xs text-slate-600 leading-relaxed">
+                    <div className="space-y-2 md:space-y-3">
+                      <h3 className="text-xs md:text-sm font-semibold text-slate-900">Getting Started</h3>
+                      <p className="text-[10px] md:text-xs text-slate-600 leading-relaxed">
                         Deposit funds to start making offline payments. Your assets are secured by Aptos smart contracts.
                       </p>
                       <Link
                         href="/deposit"
-                        className="inline-flex items-center gap-1 text-xs font-medium text-[#91C8CA] hover:text-[#9FE0D1] transition group"
+                        className="inline-flex items-center gap-1 text-[10px] md:text-xs font-medium text-[#91C8CA] hover:text-[#9FE0D1] transition group"
                       >
-                        Learn more about deposits 
+                        Learn more about deposits
                         <span className="group-hover:translate-x-0.5 transition-transform">→</span>
                       </Link>
                   </div>

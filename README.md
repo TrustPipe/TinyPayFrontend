@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TinyPay Frontend
+
+World's first offline crypto payment system. This repository serves two purposes:
+
+1. **Landing Page** - Product showcase and information
+2. **Payer Deposit Interface** - Wallet connection and deposit functionality
+
+## Overview
+
+TinyPay enables offline cryptocurrency payments through innovative One-Time Payment (OTP) codes. Users deposit funds on-chain, generate OTPs, and make instant payments without internet connection. Merchants verify and settle transactions on-chain when back online.
+
+## Key Features
+
+- **Offline Payments** - No internet required
+- **No Signature Needed** - Secure payments without transaction signing
+- **Save to Earn** - Auto-yield through DeFi protocols
+- **Non-Custodial** - User-controlled smart contracts
+- **Built on Solana** - Fast, low-cost transactions
+
+## Tech Stack
+
+- Next.js 15 (App Router) + TypeScript
+- Tailwind CSS 4 + Framer Motion
+- Solana Web3.js + Wallet Adapter
+- Vanta.js + Three.js
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Build
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm start
+```
 
-## Learn More
+## Network Info
 
-To learn more about Next.js, take a look at the following resources:
+**Solana Devnet**
+- Program: `88oZkwPMg9iWjPTUqYJXkRE2JYmFEvRraC6vYTcH9CGH`
+- [View on Explorer](https://explorer.solana.com/address/88oZkwPMg9iWjPTUqYJXkRE2JYmFEvRraC6vYTcH9CGH?cluster=devnet)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Links
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- [Smart Contract (Solana)](https://github.com/TrustPipe/TinyPayContract-Solana)
+- [Demo Video](https://youtu.be/-Y8RJbAaFYQ)
+- Contact: team@tinypay.xyz
 
-## Deploy on Vercel
+## Mobile Apps
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+iOS TestFlight available:
+- Payer App (generate OTPs & pay)
+- Merchant App (scan & receive)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+© 2025 TinyPay

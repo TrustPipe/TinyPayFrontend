@@ -49,7 +49,7 @@ npm start
 ## Links
 
 - [Smart Contract (Solana)](https://github.com/TrustPipe/TinyPayContract-Solana)
-- [Demo Video](https://youtu.be/-Y8RJbAaFYQ)
+- [Demo Video](https://youtu.be/E59_zBE-Mao)
 - Contact: team@tinypay.xyz
 
 ## Mobile Apps

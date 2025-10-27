@@ -161,7 +161,7 @@ export default function Home() {
           </div>
           <div className="flex items-center gap-1.5 lg:gap-2">
             <a
-              href="https://youtu.be/-Y8RJbAaFYQ"
+              href="https://youtu.be/E59_zBE-Mao"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center w-8 h-8 lg:w-10 lg:h-10 rounded-full bg-gradient-to-r from-[#F2B92C]/25 via-[#F2B92C]/20 to-[#6B9EF5]/20 backdrop-blur-xl border border-[#F2B92C]/40 text-slate-800 shadow-md shadow-[#F2B92C]/20 hover:shadow-lg hover:shadow-[#F2B92C]/30 transition-all"
